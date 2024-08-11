@@ -91,9 +91,9 @@ const Index = () => {
         action,
         ...formData,
         draft,
-        image: image || null,
-        file_name: fileName || null,
-        image_url: data?.result_image || null,
+        image: imageUploaded ? image : null,
+        file_name: imageUploaded ? fileName : null,
+        image_url: !imageUploaded && data?.result_image ? data.result_image : null,
         scheduled_date: scheduledDate ? format(scheduledDate, 'yyyy-MM-dd') : null,
       };
       console.log('Payload prepared:', payload);
