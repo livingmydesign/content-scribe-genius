@@ -337,7 +337,7 @@ const Index = () => {
         </div>
       )}
       {draft && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white p-4 pb-11 shadow-md">
+        <div className="fixed bottom-0 left-0 right-0 bg-white bg-opacity-80 backdrop-blur-sm p-4 pb-11 shadow-md">
           <div className="container mx-auto flex flex-wrap justify-center gap-2">
             <Button onClick={() => handleSubmit('re-generate')}>
               {activeButton === 're-generate' && isLoading ? (
