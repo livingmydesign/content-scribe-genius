@@ -138,17 +138,23 @@ const Index = () => {
         }
 
         // Store the generated content in Firebase
-        await addDoc(collection(db, "generatedContent"), {
-          content: parsedData,
-          timestamp: new Date()
-        });
+        try {
+          await addDoc(collection(db, "generatedContent"), {
+            content: parsedData,
+            timestamp: new Date()
+          });
+        } catch (firebaseError) {
+          console.error("Error storing data in Firebase:", firebaseError);
+          // Continue execution even if Firebase storage fails
+        }
 
       } else {
         throw new Error('Unexpected response from server');
       }
     } catch (err) {
-      setError(err.message || 'An error occurred while processing the request');
-      setDialogContent({ error: err.message });
+      console.error("Error in makeWebhookCall:", err);
+      setError('An error occurred while processing the request. Please try again.');
+      setDialogContent({ error: 'An error occurred while processing the request. Please try again.' });
       setDialogOpen(true);
     } finally {
       setIsLoading(false);
