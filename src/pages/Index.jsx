@@ -76,11 +76,7 @@ const Index = () => {
         setImageUploaded(true);
         
         // Trigger webhook with image data
-        await makeWebhookCall({
-          upload_image: true,
-          image: imageData,
-          file_name: file.name
-        });
+        await makeWebhookCall('upload_image');
       };
       reader.readAsDataURL(file);
     }
@@ -92,8 +88,8 @@ const Index = () => {
     setError(null);
     try {
       const payload = {
-        ...formData,
         action,
+        ...formData,
         draft,
         image: image || null,
         file_name: fileName || null,
