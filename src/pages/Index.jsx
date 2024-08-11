@@ -99,19 +99,21 @@ const Index = () => {
       console.log("Raw webhook response:", response.data);
       
       if (response.status === 200 && response.data) {
-        let parsedData;
-        try {
-          // Try parsing with JSON5 for more lenient parsing
-          parsedData = JSON5.parse(response.data);
-        } catch (parseError) {
-          console.error('Error parsing response with JSON5:', parseError);
-          // If JSON5 fails, try with regular JSON as a fallback
+        let parsedData = response.data;
+        
+        // Check if the response is a string, if so, try to parse it
+        if (typeof response.data === 'string') {
           try {
             parsedData = JSON.parse(response.data);
-          } catch (jsonError) {
-            console.error('Error parsing response with JSON:', jsonError);
+          } catch (parseError) {
+            console.error('Error parsing response:', parseError);
             throw new Error('Failed to parse server response');
           }
+        }
+        
+        // If parsedData is an array, take the first item
+        if (Array.isArray(parsedData)) {
+          parsedData = parsedData[0];
         }
         
         console.log('Parsed response data:', parsedData);
@@ -156,8 +158,15 @@ const Index = () => {
       }
     } catch (err) {
       console.error('Error in makeWebhookCall:', err);
-      const errorMessage = err.response ? `Server error: ${err.response.status} ${err.response.statusText}` : err.message;
-      setError(errorMessage || 'An error occurred while processing the request');
+      let errorMessage;
+      if (err.response) {
+        errorMessage = `Server error: ${err.response.status} ${err.response.statusText}`;
+      } else if (err.request) {
+        errorMessage = 'No response received from the server. Please check your network connection.';
+      } else {
+        errorMessage = err.message || 'An unknown error occurred';
+      }
+      setError(errorMessage);
       setDialogContent({ error: errorMessage });
       setDialogOpen(true);
     } finally {
