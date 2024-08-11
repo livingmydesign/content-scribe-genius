@@ -170,28 +170,26 @@ const Index = () => {
       {data && (
         <div className="mt-8">
           <h2 className="text-xl font-semibold mb-2">Webhook Response:</h2>
-          <div className="space-y-4">
-            {Object.entries(data).map(([key, value]) => {
-              if (key === 'result_image' && value) {
-                return (
-                  <div key={key} className="mb-4">
-                    <h3 className="text-lg font-semibold mb-2">Result Image:</h3>
-                    <img src={value} alt="Generated" className="max-w-full h-auto rounded-md" />
-                  </div>
-                );
-              } else if (value && typeof value === 'string') {
-                return (
-                  <div key={key} className="mb-4">
-                    <h3 className="text-lg font-semibold mb-2">{key.replace(/_/g, ' ').charAt(0).toUpperCase() + key.replace(/_/g, ' ').slice(1)}:</h3>
-                    <div className="bg-gray-100 p-4 rounded-md">
-                      <ReactMarkdown>{value}</ReactMarkdown>
-                    </div>
-                  </div>
-                );
-              }
-              return null;
-            })}
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold mb-2">Raw JSON Response:</h3>
+            <pre className="bg-gray-100 p-4 rounded-md overflow-x-auto">
+              {JSON.stringify(data, null, 2)}
+            </pre>
           </div>
+          {data.result_text && (
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold mb-2">Result Text:</h3>
+              <div className="bg-gray-100 p-4 rounded-md">
+                <ReactMarkdown>{data.result_text}</ReactMarkdown>
+              </div>
+            </div>
+          )}
+          {data.result_image && (
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold mb-2">Result Image:</h3>
+              <img src={data.result_image} alt="Generated" className="max-w-full h-auto rounded-md" />
+            </div>
+          )}
         </div>
       )}
       {draft && (
