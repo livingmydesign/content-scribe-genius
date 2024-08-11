@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
-import { Loader2 } from "lucide-react"
+import { Loader2, Copy } from "lucide-react"
 import JSON5 from 'json5';
 import {
   Dialog,
@@ -16,6 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { toast } from "sonner"
 
 const Index = () => {
   const [formData, setFormData] = useState({
@@ -181,6 +182,24 @@ const Index = () => {
     makeWebhookCall(action);
   };
 
+  const copyToClipboard = () => {
+    const content = draft || (data && data.result_text) || '';
+    const formattedContent = content
+      .replace(/^#+\s/gm, '') // Remove Markdown headers
+      .replace(/\*\*/g, '') // Remove bold formatting
+      .replace(/\*/g, '') // Remove italic formatting
+      .replace(/`/g, '') // Remove code formatting
+      .replace(/\n{3,}/g, '\n\n') // Replace multiple newlines with double newlines
+      .trim();
+
+    navigator.clipboard.writeText(formattedContent).then(() => {
+      toast.success("Content copied to clipboard!");
+    }).catch(err => {
+      console.error('Failed to copy text: ', err);
+      toast.error("Failed to copy content. Please try again.");
+    });
+  };
+
   return (
     <div className="container mx-auto p-4 min-h-screen overflow-y-auto">
       <h1 className="text-2xl font-bold mb-4">Content Generation App</h1>
@@ -333,6 +352,10 @@ const Index = () => {
             <Button onClick={() => handleSubmit('post_linkedin')}>Post on LinkedIn</Button>
             <Button onClick={() => handleSubmit('generate_image')}>Generate Image</Button>
             <Button onClick={() => document.getElementById('imageUpload').click()}>Upload Image</Button>
+            <Button onClick={copyToClipboard}>
+              <Copy className="mr-2 h-4 w-4" />
+              Copy for LinkedIn
+            </Button>
             <input
               id="imageUpload"
               type="file"
