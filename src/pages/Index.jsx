@@ -74,12 +74,22 @@ const Index = () => {
       if (response.status === 200 && response.data) {
         setData(response.data);
         setConsoleData(prevData => ({ ...prevData, response: response.data }));
+        
+        // Update form data and draft based on response
         if (response.data?.is_news && response.data?.result_text) {
           setFormData(prevData => ({ ...prevData, news: response.data.result_text }));
         }
         if (response.data?.result_text) {
           setDraft(response.data.result_text);
         }
+        
+        // Update image if present in response
+        if (response.data?.result_image) {
+          setImage(response.data.result_image);
+        }
+        
+        // Trigger a re-render
+        setIsLoading(false);
       } else {
         throw new Error('Unexpected response from server');
       }
@@ -153,9 +163,9 @@ const Index = () => {
       {draft && (
         <div className="mt-8">
           <h2 className="text-xl font-semibold mb-2">Generated Content:</h2>
-          {data && !data.is_news && data.result_image && (
+          {image && (
             <div className="mb-4">
-              <img src={data.result_image} alt="Generated" className="max-w-full h-auto" />
+              <img src={image} alt="Generated" className="max-w-full h-auto" />
             </div>
           )}
           <div className="bg-gray-100 p-4 rounded-md">
