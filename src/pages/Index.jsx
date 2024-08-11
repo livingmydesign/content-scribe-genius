@@ -44,6 +44,12 @@ const Index = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (data && data.result_image && data.result_image.trim() !== '') {
+      setImage(data.result_image);
+    }
+  }, [data]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevData => ({ ...prevData, [name]: value }));
@@ -144,8 +150,9 @@ const Index = () => {
           throw new Error('Missing required data in server response');
         }
         
-        setData({ result_text: sanitizedText, is_news });
-        console.log('Extracted data:', { result_text: sanitizedText, is_news });
+        const result_image = parsedData.result_image || '';
+        setData({ result_text: sanitizedText, is_news, result_image });
+        console.log('Extracted data:', { result_text: sanitizedText, is_news, result_image });
         
         if (is_news) {
           setFormData(prevData => ({ ...prevData, news: sanitizedText }));
@@ -153,8 +160,12 @@ const Index = () => {
           setDraft(sanitizedText);
         }
 
+        if (result_image && result_image.trim() !== '') {
+          setImage(result_image);
+        }
+
         // Store the generated content in sessionStorage
-        sessionStorage.setItem('generatedContent', JSON.stringify({ result_text: sanitizedText, is_news }));
+        sessionStorage.setItem('generatedContent', JSON.stringify({ result_text: sanitizedText, is_news, result_image }));
         console.log('Content stored in sessionStorage');
       } else {
         throw new Error('Unexpected response from server');
@@ -278,7 +289,7 @@ const Index = () => {
                   <img src={image} alt="Generated" className="max-w-full h-auto rounded-md" />
                 </div>
               )}
-              {draft && (
+              {(draft || (data && data.result_text)) && (
                 <div className="bg-gray-100 p-4 rounded-md">
                   <ReactMarkdown
                     components={{
