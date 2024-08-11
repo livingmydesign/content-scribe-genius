@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import Cookies from 'js-cookie';
 import axios from 'axios';
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -27,7 +26,7 @@ const Index = () => {
   const [imageUploaded, setImageUploaded] = useState(false);
 
   useEffect(() => {
-    const savedContent = Cookies.get('generatedContent');
+    const savedContent = sessionStorage.getItem('generatedContent');
     if (savedContent) {
       const parsedContent = JSON.parse(savedContent);
       setData(parsedContent);
@@ -127,8 +126,8 @@ const Index = () => {
           setImage(parsedData.result_image);
         }
 
-        // Store the generated content in a cookie
-        Cookies.set('generatedContent', JSON.stringify(parsedData), { expires: 7 }); // Expires in 7 days
+        // Store the generated content in sessionStorage
+        sessionStorage.setItem('generatedContent', JSON.stringify(parsedData));
 
       } else {
         throw new Error('Unexpected response from server');
