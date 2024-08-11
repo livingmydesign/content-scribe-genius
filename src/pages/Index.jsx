@@ -16,6 +16,7 @@ const Index = () => {
   const [draft, setDraft] = useState('');
   const [image, setImage] = useState(null);
   const [fileName, setFileName] = useState('');
+  const [imageUploaded, setImageUploaded] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -29,6 +30,7 @@ const Index = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setImage(reader.result);
+        setImageUploaded(true);
       };
       reader.readAsDataURL(file);
     }
@@ -44,7 +46,9 @@ const Index = () => {
       draft,
       image,
       file_name: fileName,
+      upload_image: imageUploaded,
     };
+    setImageUploaded(false); // Reset the flag after sending the request
 
     const { data } = await axios.put('https://hook.eu1.make.com/7hok9kqjre31fea5p7yi9ialusmbvlkc', payload);
     return data;
