@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import ReactMarkdown from 'react-markdown'
-import { Loader2 } from "lucide-react"
+import { Loader2, X } from "lucide-react"
 
 const Index = () => {
   const [formData, setFormData] = useState({
@@ -47,6 +47,8 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
+  const [consoleData, setConsoleData] = useState(null);
+  const [showConsole, setShowConsole] = useState(false);
 
   const makeWebhookCall = async (action = 'generate') => {
     setIsLoading(true);
@@ -62,11 +64,15 @@ const Index = () => {
       };
       setImageUploaded(false); // Reset the flag after sending the request
 
+      setConsoleData({ request: payload });
+      setShowConsole(true);
+
       const response = await axios.put('https://hook.eu1.make.com/7hok9kqjre31fea5p7yi9ialusmbvlkc', payload);
       
       // Process the response immediately
       if (response.status === 200 && response.data) {
         setData(response.data);
+        setConsoleData(prevData => ({ ...prevData, response: response.data }));
         if (response.data?.is_news && response.data?.result_text) {
           setFormData(prevData => ({ ...prevData, news: response.data.result_text }));
         }
@@ -75,6 +81,7 @@ const Index = () => {
       }
     } catch (err) {
       setError(err.message || 'An error occurred while processing the request');
+      setConsoleData(prevData => ({ ...prevData, error: err.message }));
     } finally {
       setIsLoading(false);
     }
@@ -166,6 +173,17 @@ const Index = () => {
         </div>
       )}
     </div>
+    {showConsole && (
+      <div className="fixed bottom-0 left-0 right-0 bg-gray-800 text-white p-4 max-h-64 overflow-auto">
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="text-lg font-semibold">Webhook Console</h3>
+          <Button variant="ghost" size="sm" onClick={() => setShowConsole(false)}>
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+        <pre className="text-sm">{JSON.stringify(consoleData, null, 2)}</pre>
+      </div>
+    )}
   );
 };
 
