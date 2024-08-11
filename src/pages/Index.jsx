@@ -108,20 +108,29 @@ const Index = () => {
         };
         
         // Extract and sanitize the result_text and is_news
+        let sanitizedText, is_news;
         if (Array.isArray(parsedData) && parsedData.length > 0) {
-          const { result_text, is_news } = parsedData[0];
-          const sanitizedText = sanitizeText(result_text);
-          
-          setData({ result_text: sanitizedText, is_news });
-          console.log('Extracted data:', { result_text: sanitizedText, is_news });
-          
-          if (is_news) {
-            setFormData(prevData => ({ ...prevData, news: sanitizedText }));
-          } else {
-            setDraft(sanitizedText);
-          }
+          const firstItem = parsedData[0];
+          sanitizedText = sanitizeText(firstItem.result_text);
+          is_news = firstItem.is_news;
+        } else if (typeof parsedData === 'object' && parsedData !== null) {
+          sanitizedText = sanitizeText(parsedData.result_text);
+          is_news = parsedData.is_news;
         } else {
           throw new Error('Unexpected response format from server');
+        }
+        
+        if (sanitizedText === undefined || is_news === undefined) {
+          throw new Error('Missing required data in server response');
+        }
+        
+        setData({ result_text: sanitizedText, is_news });
+        console.log('Extracted data:', { result_text: sanitizedText, is_news });
+        
+        if (is_news) {
+          setFormData(prevData => ({ ...prevData, news: sanitizedText }));
+        } else {
+          setDraft(sanitizedText);
         }
 
         // Store the generated content in sessionStorage
@@ -132,8 +141,9 @@ const Index = () => {
       }
     } catch (err) {
       console.error('Error in makeWebhookCall:', err);
-      setError(err.message || 'An error occurred while processing the request');
-      setDialogContent({ error: err.message });
+      const errorMessage = err.response ? `Server error: ${err.response.status} ${err.response.statusText}` : err.message;
+      setError(errorMessage || 'An error occurred while processing the request');
+      setDialogContent({ error: errorMessage });
       setDialogOpen(true);
     } finally {
       setIsLoading(false);
