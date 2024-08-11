@@ -4,8 +4,14 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import ReactMarkdown from 'react-markdown'
-import { Loader2 } from "lucide-react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Loader2, X, Minimize2, Maximize2 } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 const Index = () => {
   const [formData, setFormData] = useState({
@@ -49,7 +55,7 @@ const Index = () => {
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [responseData, setResponseData] = useState(null);
+  const [dialogContent, setDialogContent] = useState(null);
 
   const makeWebhookCall = async (action = 'generate') => {
     setIsLoading(true);
@@ -67,9 +73,10 @@ const Index = () => {
 
       const response = await axios.put('https://hook.eu1.make.com/7hok9kqjre31fea5p7yi9ialusmbvlkc', payload);
       
+      // Process the response immediately
       if (response.status === 200 && response.data) {
         setData(response.data);
-        setResponseData(response.data);
+        setDialogContent(response.data);
         setDialogOpen(true);
         
         // Update form data and draft based on response
@@ -89,14 +96,11 @@ const Index = () => {
       }
     } catch (err) {
       setError(err.message || 'An error occurred while processing the request');
+      setDialogContent({ error: err.message });
+      setDialogOpen(true);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const JsonDisplay = ({ data }) => {
-    const jsonString = JSON.stringify(data, null, 2);
-    return <ReactMarkdown>{`\`\`\`json\n${jsonString}\n\`\`\``}</ReactMarkdown>;
   };
 
   const handleSubmit = (action = 'generate') => {
@@ -161,19 +165,35 @@ const Index = () => {
       {draft && (
         <div className="mt-8">
           <h2 className="text-xl font-semibold mb-2">Generated Content:</h2>
-          {image && (
-            <div className="mb-4">
-              <img src={image} alt="Generated" className="max-w-full h-auto" />
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              {image && (
+                <div className="mb-4">
+                  <img src={image} alt="Generated" className="max-w-full h-auto rounded-md" />
+                </div>
+              )}
+              <div className="bg-gray-100 p-4 rounded-md">
+                <ReactMarkdown>{draft}</ReactMarkdown>
+              </div>
             </div>
-          )}
-          <div className="bg-gray-100 p-4 rounded-md">
-            <ReactMarkdown>{draft}</ReactMarkdown>
+            <div className="flex-1">
+              {data && (
+                <div className="bg-gray-100 p-4 rounded-md">
+                  <h3 className="text-lg font-semibold mb-2">Response:</h3>
+                  <ReactMarkdown>{JSON.stringify(data, null, 2)}</ReactMarkdown>
+                </div>
+              )}
+            </div>
           </div>
-          <div className="mt-4 space-x-2">
+          <div className="mt-4 flex flex-wrap gap-2">
             <Button onClick={() => handleSubmit('re-generate')}>Re-generate</Button>
             <Button onClick={() => handleSubmit('post_linkedin')}>Post on LinkedIn</Button>
             <Button onClick={() => handleSubmit('generate_image')}>Generate Image</Button>
             <Button onClick={() => document.getElementById('imageUpload').click()}>Upload Image</Button>
+            <Button onClick={() => handleSubmit('summarize')}>Summarize</Button>
+            <Button onClick={() => handleSubmit('expand')}>Expand</Button>
+            <Button onClick={() => handleSubmit('translate')}>Translate</Button>
+            <Button onClick={() => handleSubmit('sentiment')}>Sentiment Analysis</Button>
             <input
               id="imageUpload"
               type="file"
@@ -185,17 +205,16 @@ const Index = () => {
         </div>
       )}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>Webhook Response</DialogTitle>
+            <DialogDescription>
+              Here's the response from the webhook:
+            </DialogDescription>
           </DialogHeader>
-          {responseData && <JsonDisplay data={responseData} />}
-          <DialogFooter className="flex justify-between">
-            <Button onClick={() => handleSubmit('re-generate')}>Re-generate</Button>
-            <Button onClick={() => handleSubmit('post_linkedin')}>Post on LinkedIn</Button>
-            <Button onClick={() => handleSubmit('generate_image')}>Generate Image</Button>
-            <Button onClick={() => document.getElementById('imageUpload').click()}>Upload Image</Button>
-          </DialogFooter>
+          <pre className="bg-gray-100 p-4 rounded-md overflow-auto max-h-96">
+            {JSON.stringify(dialogContent, null, 2)}
+          </pre>
         </DialogContent>
       </Dialog>
     </div>
