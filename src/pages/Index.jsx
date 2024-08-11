@@ -228,7 +228,7 @@ const Index = () => {
 
   return (
     <div className="container mx-auto p-4 pb-40 min-h-screen overflow-y-auto">
-      <h1 className="text-2xl font-bold mb-4">Content Generation App</h1>
+      <h1 className="text-2xl font-bold mb-4 text-center sm:text-left">Content Generation App</h1>
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
           <Textarea
@@ -240,7 +240,10 @@ const Index = () => {
             className="flex-grow"
             rows={3}
           />
-          <Button onClick={() => handleSubmit('get_news')} className="h-24 sm:w-24">
+          <Button 
+            onClick={() => handleSubmit('get_news')} 
+            className="h-24 sm:w-24 bg-gradient-to-r from-[#A062F9] to-[#1A77DA] hover:from-[#8A4EE8] hover:to-[#1665C0] transition-all duration-300 shadow-md hover:shadow-lg"
+          >
             {activeButton === 'get_news' && isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
@@ -269,7 +272,11 @@ const Index = () => {
           onChange={handleInputChange}
           placeholder="Inspiring"
         />
-        <Button onClick={() => handleSubmit('generate')} disabled={isLoading}>
+        <Button 
+          onClick={() => handleSubmit('generate')} 
+          disabled={isLoading}
+          className="bg-gradient-to-r from-[#A062F9] to-[#1A77DA] hover:from-[#8A4EE8] hover:to-[#1665C0] transition-all duration-300 shadow-md hover:shadow-lg"
+        >
           {activeButton === 'generate' && isLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
