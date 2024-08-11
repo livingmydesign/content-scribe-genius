@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -12,6 +12,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { collection, addDoc, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { getFirestore } from "firebase/firestore";
 
 const Index = () => {
   const [formData, setFormData] = useState({
@@ -24,6 +26,30 @@ const Index = () => {
   const [image, setImage] = useState(null);
   const [fileName, setFileName] = useState('');
   const [imageUploaded, setImageUploaded] = useState(false);
+
+  useEffect(() => {
+    const fetchLatestContent = async () => {
+      try {
+        const db = getFirestore();
+        const q = query(collection(db, "generatedContent"), orderBy("timestamp", "desc"), limit(1));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          const latestContent = doc.data().content;
+          setData(latestContent);
+          if (latestContent.result_text) {
+            setDraft(latestContent.result_text);
+          }
+          if (latestContent.result_image) {
+            setImage(latestContent.result_image);
+          }
+        });
+      } catch (error) {
+        console.error("Error fetching latest content:", error);
+      }
+    };
+
+    fetchLatestContent();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -111,6 +137,14 @@ const Index = () => {
         if (parsedData.result_image) {
           setImage(parsedData.result_image);
         }
+
+        // Store the generated content in Firebase
+        const db = getFirestore();
+        await addDoc(collection(db, "generatedContent"), {
+          content: parsedData,
+          timestamp: new Date()
+        });
+
       } else {
         throw new Error('Unexpected response from server');
       }
