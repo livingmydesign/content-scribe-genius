@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/dialog"
 import { collection, addDoc, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { db } from "../App";
-import { useState, useEffect } from 'react';
 
 const Index = () => {
   const [formData, setFormData] = useState({
