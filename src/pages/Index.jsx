@@ -48,22 +48,17 @@ const Index = () => {
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
 
-  const makeWebhookCall = async (additionalData = {}) => {
+  const makeWebhookCall = async (action = 'generate') => {
     setIsLoading(true);
     setError(null);
     try {
       const payload = {
         ...formData,
-        get_news: additionalData.get_news || false,
-        generate_image: additionalData.generate_image || false,
-        're-generate': additionalData['re-generate'] || false,
-        post_linkedin: additionalData.post_linkedin || false,
+        action,
         draft,
-        image,
-        file_name: fileName,
-        upload_image: imageUploaded,
-        image_url: data?.result_image || '',
-        generate: !Object.values(additionalData).some(Boolean),
+        image: image || null,
+        file_name: fileName || null,
+        image_url: data?.result_image || null,
       };
       setImageUploaded(false); // Reset the flag after sending the request
 
@@ -100,8 +95,8 @@ const Index = () => {
     }
   };
 
-  const handleSubmit = (additionalData = {}) => {
-    makeWebhookCall(additionalData);
+  const handleSubmit = (action = 'generate') => {
+    makeWebhookCall(action);
   };
 
   return (
@@ -117,7 +112,7 @@ const Index = () => {
             className="flex-grow"
             rows={3}
           />
-          <Button onClick={() => handleSubmit({ get_news: true })} className="h-24">
+          <Button onClick={() => handleSubmit('get_news')} className="h-24">
             Get News
           </Button>
         </div>
@@ -139,7 +134,7 @@ const Index = () => {
           onChange={handleInputChange}
           placeholder="Inspiring"
         />
-        <Button onClick={() => handleSubmit()} disabled={isLoading}>
+        <Button onClick={() => handleSubmit('generate')} disabled={isLoading}>
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -171,9 +166,9 @@ const Index = () => {
             <ReactMarkdown>{data.result_text}</ReactMarkdown>
           </div>
           <div className="mt-4 space-x-2">
-            <Button onClick={() => handleSubmit({ 're-generate': true })}>Re-generate</Button>
-            <Button onClick={() => handleSubmit({ post_linkedin: true })}>Post on LinkedIn</Button>
-            <Button onClick={() => handleSubmit({ generate_image: true })}>Generate Image</Button>
+            <Button onClick={() => handleSubmit('re-generate')}>Re-generate</Button>
+            <Button onClick={() => handleSubmit('post_linkedin')}>Post on LinkedIn</Button>
+            <Button onClick={() => handleSubmit('generate_image')}>Generate Image</Button>
             <Button onClick={() => document.getElementById('imageUpload').click()}>Upload Image</Button>
             <input
               id="imageUpload"
