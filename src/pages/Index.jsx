@@ -64,33 +64,18 @@ const Index = () => {
 
       const response = await axios.put('https://hook.eu1.make.com/7hok9kqjre31fea5p7yi9ialusmbvlkc', payload);
       
-      // Start polling for results
-      let pollCount = 0;
-      const pollInterval = setInterval(async () => {
-        pollCount++;
-        if (pollCount >= 10) { // Poll for up to 30 seconds (10 * 3s)
-          clearInterval(pollInterval);
-          setError("Timeout: No response received after 30 seconds");
-          setIsLoading(false);
-          return;
+      // Process the response immediately
+      if (response.status === 200 && response.data) {
+        setData(response.data);
+        if (response.data?.is_news && response.data?.result_text) {
+          setFormData(prevData => ({ ...prevData, news: response.data.result_text }));
         }
-        
-        try {
-          const pollResponse = await axios.get(`https://hook.eu1.make.com/7hok9kqjre31fea5p7yi9ialusmbvlkc?id=${response.data.id}`);
-          if (pollResponse.data.status === 'completed') {
-            clearInterval(pollInterval);
-            setData(pollResponse.data);
-            if (pollResponse.data?.is_news && pollResponse.data?.result_text) {
-              setFormData(prevData => ({ ...prevData, news: pollResponse.data.result_text }));
-            }
-            setIsLoading(false);
-          }
-        } catch (pollErr) {
-          console.error("Polling error:", pollErr);
-        }
-      }, 3000); // Poll every 3 seconds
+      } else {
+        throw new Error('Unexpected response from server');
+      }
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'An error occurred while processing the request');
+    } finally {
       setIsLoading(false);
     }
   };
