@@ -76,21 +76,28 @@ const Index = () => {
       console.log("Webhook response:", response.data);
       
       if (response.status === 200 && response.data) {
-        let parsedData = response.data;
-        if (typeof parsedData === 'string') {
+        let parsedData;
+        if (typeof response.data === 'string') {
           try {
-            parsedData = JSON.parse(parsedData.replace(/[\u0000-\u001F\u007F-\u009F]/g, ""));
+            parsedData = JSON.parse(response.data);
           } catch (parseError) {
             console.error("Error parsing JSON:", parseError);
-            parsedData = { error: "Unable to parse server response" };
+            throw new Error("Unable to parse server response");
           }
+        } else {
+          parsedData = response.data;
         }
         
         setData(parsedData);
         
-        if (parsedData.is_news) {
-          setFormData(prevData => ({ ...prevData, news: parsedData.result_text }));
-        } else {
+        if (Array.isArray(parsedData) && parsedData.length > 0) {
+          const firstItem = parsedData[0];
+          if (firstItem.is_news) {
+            setFormData(prevData => ({ ...prevData, news: firstItem.result_text }));
+          } else {
+            setDraft(firstItem.result_text);
+          }
+        } else if (parsedData.result_text) {
           setDraft(parsedData.result_text);
         }
         
@@ -168,19 +175,19 @@ const Index = () => {
       )}
       {error && <p className="mt-4 text-red-500">Error: {error}</p>}
 
-      {data && !data.is_news && (
+      {data && (
         <div className="mt-8">
           <h2 className="text-xl font-semibold mb-2">Generated Content:</h2>
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
-              {data.result_image && (
+              {image && (
                 <div className="mb-4">
-                  <img src={data.result_image} alt="Generated" className="max-w-full h-auto rounded-md" />
+                  <img src={image} alt="Generated" className="max-w-full h-auto rounded-md" />
                 </div>
               )}
-              {data.result_text && (
+              {draft && (
                 <div className="bg-gray-100 p-4 rounded-md">
-                  <ReactMarkdown>{data.result_text}</ReactMarkdown>
+                  <ReactMarkdown>{draft}</ReactMarkdown>
                 </div>
               )}
             </div>
