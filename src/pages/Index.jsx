@@ -165,19 +165,35 @@ const Index = () => {
       {draft && (
         <div className="mt-8">
           <h2 className="text-xl font-semibold mb-2">Generated Content:</h2>
-          {image && (
-            <div className="mb-4">
-              <img src={image} alt="Generated" className="max-w-full h-auto" />
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              {image && (
+                <div className="mb-4">
+                  <img src={image} alt="Generated" className="max-w-full h-auto rounded-md" />
+                </div>
+              )}
+              <div className="bg-gray-100 p-4 rounded-md">
+                <ReactMarkdown>{draft}</ReactMarkdown>
+              </div>
             </div>
-          )}
-          <div className="bg-gray-100 p-4 rounded-md">
-            <ReactMarkdown>{draft}</ReactMarkdown>
+            <div className="flex-1">
+              {data && (
+                <div className="bg-gray-100 p-4 rounded-md">
+                  <h3 className="text-lg font-semibold mb-2">Response:</h3>
+                  <ReactMarkdown>{JSON.stringify(data, null, 2)}</ReactMarkdown>
+                </div>
+              )}
+            </div>
           </div>
-          <div className="mt-4 space-x-2">
+          <div className="mt-4 flex flex-wrap gap-2">
             <Button onClick={() => handleSubmit('re-generate')}>Re-generate</Button>
             <Button onClick={() => handleSubmit('post_linkedin')}>Post on LinkedIn</Button>
             <Button onClick={() => handleSubmit('generate_image')}>Generate Image</Button>
             <Button onClick={() => document.getElementById('imageUpload').click()}>Upload Image</Button>
+            <Button onClick={() => handleSubmit('summarize')}>Summarize</Button>
+            <Button onClick={() => handleSubmit('expand')}>Expand</Button>
+            <Button onClick={() => handleSubmit('translate')}>Translate</Button>
+            <Button onClick={() => handleSubmit('sentiment')}>Sentiment Analysis</Button>
             <input
               id="imageUpload"
               type="file"
