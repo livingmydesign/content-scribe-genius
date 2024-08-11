@@ -18,13 +18,7 @@ import {
 } from "@/components/ui/dialog"
 import { toast } from "sonner"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { format } from "date-fns"
 
 const Index = () => {
@@ -413,42 +407,24 @@ const Index = () => {
                 </>
               )}
               </Button>
-              <Button
-                onClick={() => {
-                  if (scheduledDate) {
-                    setScheduledDate(null);
-                  } else {
-                    setDialogOpen(true);
-                  }
-                }}
-                variant="outline"
-                className={`ml-2 w-10 h-10 p-0 ${
-                  scheduledDate 
-                    ? 'bg-red-500 hover:bg-red-600' 
-                    : 'bg-[#0A66C2] hover:bg-[#004182]'
-                } text-white`}
-              >
-                <Calendar className="h-4 w-4" />
-              </Button>
-              <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>Schedule Post</DialogTitle>
-                    <DialogDescription>
-                      Choose a date to schedule your post.
-                    </DialogDescription>
-                  </DialogHeader>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={`ml-2 w-10 h-10 p-0 bg-[#0A66C2] hover:bg-[#004182] ${scheduledDate ? 'text-white' : 'text-white'}`}
+                  >
+                    <Calendar className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="end">
                   <CalendarComponent
                     mode="single"
                     selected={scheduledDate}
-                    onSelect={(date) => {
-                      setScheduledDate(date);
-                      setDialogOpen(false);
-                    }}
+                    onSelect={setScheduledDate}
                     initialFocus
                   />
-                </DialogContent>
-              </Dialog>
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
         </div>
