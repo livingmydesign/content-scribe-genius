@@ -79,13 +79,12 @@ const Index = () => {
         let parsedData;
         try {
           // Attempt to parse if it's a string, otherwise use as-is
-          parsedData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
+          parsedData = typeof response.data === 'string' ? JSON.parse(response.data.replace(/[\u0000-\u001F\u007F-\u009F]/g, '')) : response.data;
           
           // Function to sanitize text
           const sanitizeText = (text) => {
             if (typeof text !== 'string') return text;
-            return text.replace(/[\u0000-\u001F\u007F-\u009F]/g, '')
-                       .replace(/\\n/g, '\n')  // Replace literal '\n' with newline
+            return text.replace(/\\n/g, '\n')  // Replace literal '\n' with newline
                        .replace(/\\/g, '');    // Remove remaining backslashes
           };
           
