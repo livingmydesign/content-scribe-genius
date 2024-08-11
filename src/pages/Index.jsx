@@ -74,16 +74,17 @@ const Index = () => {
       const response = await axios.put('https://hook.eu1.make.com/7hok9kqjre31fea5p7yi9ialusmbvlkc', payload);
       
       if (response.status === 200 && response.data) {
-        setData(response.data);
-        setDialogContent(response.data);
+        const parsedData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
+        setData(parsedData);
+        setDialogContent(parsedData);
         setDialogOpen(true);
         
-        if (response.data?.result_text) {
-          setDraft(response.data.result_text);
+        if (parsedData?.result_text) {
+          setDraft(parsedData.result_text);
         }
         
-        if (response.data?.result_image) {
-          setImage(response.data.result_image);
+        if (parsedData?.result_image) {
+          setImage(parsedData.result_image);
         }
       } else {
         throw new Error('Unexpected response from server');
@@ -202,17 +203,17 @@ const Index = () => {
               Here's the response from the webhook:
             </DialogDescription>
           </DialogHeader>
-          {dialogContent && dialogContent.result_text ? (
+          {dialogContent && (
             <div className="mt-4">
               <h3 className="text-lg font-semibold mb-2">Result Text:</h3>
               <div className="bg-gray-100 p-4 rounded-md overflow-auto max-h-96">
-                <ReactMarkdown>{dialogContent.result_text}</ReactMarkdown>
+                <ReactMarkdown>
+                  {typeof dialogContent === 'string'
+                    ? JSON.parse(dialogContent).result_text
+                    : dialogContent.result_text}
+                </ReactMarkdown>
               </div>
             </div>
-          ) : (
-            <pre className="bg-gray-100 p-4 rounded-md overflow-auto max-h-96">
-              {JSON.stringify(dialogContent, null, 2)}
-            </pre>
           )}
         </DialogContent>
       </Dialog>
