@@ -75,6 +75,9 @@ const Index = () => {
       
       console.log("Webhook response:", response.data);
       
+      // Set the raw response data
+      setData(response.data);
+      
       if (response.status === 200 && response.data) {
         let parsedData = response.data;
         if (typeof parsedData === 'string') {
@@ -85,7 +88,6 @@ const Index = () => {
             parsedData = { error: "Unable to parse server response" };
           }
         }
-        setData(parsedData);
         
         if (parsedData?.result_text) {
           setDraft(parsedData.result_text);
@@ -168,6 +170,12 @@ const Index = () => {
       {data && (
         <div className="mt-8">
           <h2 className="text-xl font-semibold mb-2">Webhook Response:</h2>
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold mb-2">Raw JSON Response:</h3>
+            <pre className="bg-gray-100 p-4 rounded-md overflow-x-auto">
+              {JSON.stringify(data, null, 2)}
+            </pre>
+          </div>
           {data.result_text && (
             <div className="mb-4">
               <h3 className="text-lg font-semibold mb-2">Result Text:</h3>
