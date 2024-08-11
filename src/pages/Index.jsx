@@ -393,10 +393,10 @@ const Index = () => {
               onChange={handleImageUpload}
               className="hidden"
             />
-            <div className="w-full sm:w-auto">
+            <div className="w-full sm:w-auto flex">
               <Button 
                 onClick={() => handleSubmit('post_linkedin')}
-                className="w-full sm:w-auto text-sm sm:text-base py-1 sm:py-2 px-2 sm:px-4 bg-[#0A66C2] hover:bg-[#004182]"
+                className="flex-grow sm:flex-grow-0 text-sm sm:text-base py-1 sm:py-2 px-2 sm:px-4 bg-[#0A66C2] hover:bg-[#004182]"
               >
               {activeButton === 'post_linkedin' && isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -407,13 +407,11 @@ const Index = () => {
                 </>
               )}
               </Button>
-            </div>
-            <div className="w-full sm:w-auto">
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className={`w-10 h-10 p-0 ${scheduledDate ? 'text-primary' : ''}`}
+                    className={`ml-2 w-10 h-10 p-0 bg-[#0A66C2] hover:bg-[#004182] ${scheduledDate ? 'text-white' : 'text-white'}`}
                   >
                     <Calendar className="h-4 w-4" />
                   </Button>
