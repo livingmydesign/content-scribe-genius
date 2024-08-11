@@ -8,12 +8,13 @@ import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   // Add your Firebase configuration here
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyAJbLj7_8Yp-Gbrs_rlpayUTw6BbCAgf5s",
+  authDomain: "source-d28de.firebaseapp.com",
+  projectId: "source-d28de",
+  storageBucket: "source-d28de.appspot.com",
+  messagingSenderId: "283060039877",
+  appId: "1:283060039877:web:070f58a7bb016a7e36c0ac",
+  measurementId: "G-LJE5RB45RM"
 };
 
 const app = initializeApp(firebaseConfig);
