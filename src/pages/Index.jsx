@@ -290,10 +290,10 @@ const Index = () => {
                 <div className="mb-4 relative">
                   <img src={image} alt="Generated" className="max-w-full h-auto rounded-md" />
                   <Button
-                    className="absolute top-2 right-2 p-2 bg-white bg-opacity-70 rounded-full"
+                    className="absolute top-2 right-2 p-2 bg-white bg-opacity-70 rounded-full hover:bg-opacity-100 transition-all duration-200"
                     onClick={() => handleSubmit('generate_image')}
                   >
-                    <RefreshCw className="h-4 w-4" />
+                    <RefreshCw className="h-4 w-4 text-black" />
                   </Button>
                 </div>
               )}
