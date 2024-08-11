@@ -345,8 +345,8 @@ const Index = () => {
         </div>
       )}
       {draft && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white bg-opacity-60 backdrop-blur-sm p-4 pb-11 shadow-md">
-          <div className="container mx-auto flex flex-wrap justify-center gap-2">
+        <div className="fixed bottom-0 left-0 right-0 bg-white bg-opacity-60 backdrop-blur-sm p-4 shadow-md">
+          <div className="container mx-auto flex flex-wrap justify-center gap-2 mb-2">
             <div className="w-full sm:w-auto">
               <Button 
                 onClick={() => handleSubmit('re-generate')}
@@ -443,13 +443,11 @@ const Index = () => {
               </Popover>
             </div>
           </div>
-        </div>
-      )}
-      {scheduledDate && (
-        <div className="fixed bottom-20 left-0 right-0 bg-white bg-opacity-60 backdrop-blur-sm p-2 shadow-md">
-          <div className="container mx-auto text-center">
-            <p className="text-sm">Scheduled for: {format(scheduledDate, 'PPP')}</p>
-          </div>
+          {scheduledDate && (
+            <div className="container mx-auto text-center mt-2">
+              <p className="text-sm">Scheduled for: {format(scheduledDate, 'PPP')}</p>
+            </div>
+          )}
         </div>
       )}
     </div>
