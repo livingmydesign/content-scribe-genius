@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
-import { Loader2, Copy } from "lucide-react"
+import { Loader2, Copy, RefreshCw } from "lucide-react"
 import JSON5 from 'json5';
 import {
   Dialog,
@@ -34,6 +34,7 @@ const Index = () => {
   const [data, setData] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogContent, setDialogContent] = useState(null);
+  const [activeButton, setActiveButton] = useState(null);
 
   useEffect(() => {
     const savedContent = sessionStorage.getItem('generatedContent');
@@ -189,6 +190,7 @@ const Index = () => {
   };
 
   const handleSubmit = (action = 'generate') => {
+    setActiveButton(action);
     makeWebhookCall(action);
   };
 
@@ -223,7 +225,7 @@ const Index = () => {
     <div className="container mx-auto p-4 min-h-screen overflow-y-auto">
       <h1 className="text-2xl font-bold mb-4">Content Generation App</h1>
       <div className="space-y-4">
-        <div className="flex space-x-2">
+        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
           <Textarea
             name="news"
             id="news"
@@ -233,8 +235,12 @@ const Index = () => {
             className="flex-grow"
             rows={3}
           />
-          <Button onClick={() => handleSubmit('get_news')} className="h-24">
-            Get News
+          <Button onClick={() => handleSubmit('get_news')} className="h-24 sm:w-24">
+            {activeButton === 'get_news' && isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              "Get News"
+            )}
           </Button>
         </div>
         <Input
@@ -259,11 +265,8 @@ const Index = () => {
           placeholder="Inspiring"
         />
         <Button onClick={() => handleSubmit('generate')} disabled={isLoading}>
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Generating...
-            </>
+          {activeButton === 'generate' && isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             "Generate"
           )}
@@ -279,13 +282,19 @@ const Index = () => {
       {error && <p className="mt-4 text-red-500">Error: {error}</p>}
 
       {data && (
-        <div className="mt-8">
+        <div className="mt-8 pb-20">
           <h2 className="text-xl font-semibold mb-2">Generated Content:</h2>
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               {image && (
-                <div className="mb-4">
+                <div className="mb-4 relative">
                   <img src={image} alt="Generated" className="max-w-full h-auto rounded-md" />
+                  <Button
+                    className="absolute top-2 right-2 p-2 bg-white bg-opacity-70 rounded-full"
+                    onClick={() => handleSubmit('generate_image')}
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
                 </div>
               )}
               {(draft || (data && data.result_text)) && (
@@ -328,12 +337,32 @@ const Index = () => {
         </div>
       )}
       {draft && (
-        <div className="mt-8">
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Button onClick={() => handleSubmit('re-generate')}>Re-generate</Button>
-            <Button onClick={() => handleSubmit('post_linkedin')}>Post on LinkedIn</Button>
-            <Button onClick={() => handleSubmit('generate_image')}>Generate Image</Button>
-            <Button onClick={() => document.getElementById('imageUpload').click()}>Upload Image</Button>
+        <div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-md">
+          <div className="container mx-auto flex flex-wrap justify-center gap-2">
+            <Button onClick={() => handleSubmit('re-generate')}>
+              {activeButton === 're-generate' && isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "Re-generate"
+              )}
+            </Button>
+            <Button onClick={() => handleSubmit('post_linkedin')}>
+              {activeButton === 'post_linkedin' && isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "Post on LinkedIn"
+              )}
+            </Button>
+            <Button onClick={() => handleSubmit('generate_image')}>
+              {activeButton === 'generate_image' && isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "Generate Image"
+              )}
+            </Button>
+            <Button onClick={() => document.getElementById('imageUpload').click()}>
+              Upload Image
+            </Button>
             <Button onClick={copyToClipboard}>
               <Copy className="mr-2 h-4 w-4" />
               Copy for LinkedIn
