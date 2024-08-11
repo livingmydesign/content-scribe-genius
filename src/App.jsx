@@ -23,38 +23,20 @@ const storage = getStorage(app);
 // Function to check Firebase permissions
 const checkFirebasePermissions = async () => {
   try {
-    // Check Firestore read permission
-    const testCollection = collection(db, 'test_collection');
-    await getDocs(testCollection);
-    console.log('✅ Firestore read permission: OK');
+    // Check Firestore read permission for generatedContent
+    const generatedContentCollection = collection(db, 'generatedContent');
+    await getDocs(generatedContentCollection);
+    console.log('✅ Firestore read permission for generatedContent: OK');
   } catch (error) {
-    console.log('❌ Firestore read permission: Failed', error);
+    console.log('❌ Firestore read permission for generatedContent: Failed', error);
   }
 
   try {
-    // Check Firestore write permission
-    await addDoc(collection(db, 'test_collection'), { test: true });
-    console.log('✅ Firestore write permission: OK');
+    // Check Firestore write permission for generatedContent
+    await addDoc(collection(db, 'generatedContent'), { test: true });
+    console.log('✅ Firestore write permission for generatedContent: OK');
   } catch (error) {
-    console.log('❌ Firestore write permission: Failed', error);
-  }
-
-  try {
-    // Check Storage read permission
-    const storageRef = ref(storage);
-    await listAll(storageRef);
-    console.log('✅ Storage read permission: OK');
-  } catch (error) {
-    console.log('❌ Storage read permission: Failed', error);
-  }
-
-  try {
-    // Check Storage write permission
-    const testRef = ref(storage, 'test_file.txt');
-    await uploadString(testRef, 'Hello, World!');
-    console.log('✅ Storage write permission: OK');
-  } catch (error) {
-    console.log('❌ Storage write permission: Failed', error);
+    console.log('❌ Firestore write permission for generatedContent: Failed', error);
   }
 };
 

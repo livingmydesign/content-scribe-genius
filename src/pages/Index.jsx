@@ -33,7 +33,8 @@ const Index = () => {
         const db = getFirestore();
         const q = query(collection(db, "generatedContent"), orderBy("timestamp", "desc"), limit(1));
         const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
+        if (!querySnapshot.empty) {
+          const doc = querySnapshot.docs[0];
           const latestContent = doc.data().content;
           setData(latestContent);
           if (latestContent.result_text) {
@@ -42,9 +43,10 @@ const Index = () => {
           if (latestContent.result_image) {
             setImage(latestContent.result_image);
           }
-        });
+        }
       } catch (error) {
         console.error("Error fetching latest content:", error);
+        setError("Failed to fetch latest content. Please try again.");
       }
     };
 
