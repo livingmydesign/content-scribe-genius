@@ -54,6 +54,7 @@ const Index = () => {
       image,
       file_name: fileName,
       upload_image: imageUploaded,
+      image_url: data?.result_image || '',
     };
     setImageUploaded(false); // Reset the flag after sending the request
 
@@ -123,12 +124,20 @@ const Index = () => {
       {isLoading && <p className="mt-4">Loading...</p>}
       {isError && <p className="mt-4 text-red-500">Error: {error.message}</p>}
 
-      {data && !data.is_news && data.result_text && (
+      {data && !data.is_news && (data.result_text || data.result_image) && (
         <div className="mt-8">
           <h2 className="text-xl font-semibold mb-2">Generated Content:</h2>
-          <div className="bg-gray-100 p-4 rounded-md">
-            <ReactMarkdown>{data.result_text}</ReactMarkdown>
-          </div>
+          {data.result_image && (
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold mb-2">Generated Image:</h3>
+              <img src={data.result_image} alt="Generated" className="max-w-full h-auto mb-4" />
+            </div>
+          )}
+          {data.result_text && (
+            <div className="bg-gray-100 p-4 rounded-md">
+              <ReactMarkdown>{data.result_text}</ReactMarkdown>
+            </div>
+          )}
           <div className="mt-4 space-x-2">
             <Button onClick={() => handleSubmit({ 're-generate': true })}>Re-generate</Button>
             <Button onClick={() => handleSubmit({ post_linkedin: true })}>Post on LinkedIn</Button>
@@ -142,12 +151,6 @@ const Index = () => {
               className="hidden"
             />
           </div>
-          {data.result_image && (
-            <div className="mt-4">
-              <h3 className="text-lg font-semibold mb-2">Generated Image:</h3>
-              <img src={data.result_image} alt="Generated" className="max-w-full h-auto" />
-            </div>
-          )}
         </div>
       )}
     </div>
