@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
 import axios from 'axios';
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -12,8 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { collection, addDoc, getDocs, query, orderBy, limit } from "firebase/firestore";
-import { getFirestore } from "firebase/firestore";
+import Cookies from 'js-cookie';
 
 const Index = () => {
   const [formData, setFormData] = useState({
@@ -28,29 +28,17 @@ const Index = () => {
   const [imageUploaded, setImageUploaded] = useState(false);
 
   useEffect(() => {
-    const fetchLatestContent = async () => {
-      try {
-        const db = getFirestore();
-        const q = query(collection(db, "generatedContent"), orderBy("timestamp", "desc"), limit(1));
-        const querySnapshot = await getDocs(q);
-        if (!querySnapshot.empty) {
-          const doc = querySnapshot.docs[0];
-          const latestContent = doc.data().content;
-          setData(latestContent);
-          if (latestContent.result_text) {
-            setDraft(latestContent.result_text);
-          }
-          if (latestContent.result_image) {
-            setImage(latestContent.result_image);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching latest content:", error);
-        setError("Failed to fetch latest content. Please try again.");
+    const savedContent = Cookies.get('generatedContent');
+    if (savedContent) {
+      const parsedContent = JSON.parse(savedContent);
+      setData(parsedContent);
+      if (parsedContent.result_text) {
+        setDraft(parsedContent.result_text);
       }
-    };
-
-    fetchLatestContent();
+      if (parsedContent.result_image) {
+        setImage(parsedContent.result_image);
+      }
+    }
   }, []);
 
   const handleInputChange = (e) => {
@@ -140,12 +128,8 @@ const Index = () => {
           setImage(parsedData.result_image);
         }
 
-        // Store the generated content in Firebase
-        const db = getFirestore();
-        await addDoc(collection(db, "generatedContent"), {
-          content: parsedData,
-          timestamp: new Date()
-        });
+        // Store the generated content in a cookie
+        Cookies.set('generatedContent', JSON.stringify(parsedData), { expires: 7 }); // Expires in 7 days
 
       } else {
         throw new Error('Unexpected response from server');
