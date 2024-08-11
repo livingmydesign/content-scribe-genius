@@ -29,6 +29,11 @@ const Index = () => {
   const [image, setImage] = useState(null);
   const [fileName, setFileName] = useState('');
   const [imageUploaded, setImageUploaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [data, setData] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogContent, setDialogContent] = useState(null);
 
   useEffect(() => {
     const savedContent = sessionStorage.getItem('generatedContent');
@@ -75,12 +80,6 @@ const Index = () => {
       reader.readAsDataURL(file);
     }
   };
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [data, setData] = useState(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogContent, setDialogContent] = useState(null);
 
   const makeWebhookCall = async (action = 'generate') => {
     console.log(`Starting webhook call for action: ${action}`);
@@ -320,47 +319,10 @@ const Index = () => {
                       },
                     }}
                   >
-                    {draft}
+                    {draft || (data && data.result_text) || ''}
                   </ReactMarkdown>
                 </div>
               )}
-              {!draft && data && data.result_text && (
-                <div className="bg-gray-100 p-4 rounded-md">
-                  <ReactMarkdown
-                    components={{
-                      p: ({ children }) => <p className="mb-4">{children}</p>,
-                      h1: ({ children }) => <h1 className="text-2xl font-bold mb-2">{children}</h1>,
-                      h2: ({ children }) => <h2 className="text-xl font-semibold mb-2">{children}</h2>,
-                      h3: ({ children }) => <h3 className="text-lg font-medium mb-2">{children}</h3>,
-                      ul: ({ children }) => <ul className="list-disc pl-5 mb-4">{children}</ul>,
-                      ol: ({ children }) => <ol className="list-decimal pl-5 mb-4">{children}</ol>,
-                      li: ({ children }) => <li className="mb-1">{children}</li>,
-                      blockquote: ({ children }) => <blockquote className="border-l-4 border-gray-300 pl-4 italic my-4">{children}</blockquote>,
-                      code: ({ node, inline, className, children, ...props }) => {
-                        const match = /language-(\w+)/.exec(className || '')
-                        return !inline && match ? (
-                          <SyntaxHighlighter
-                            style={vscDarkPlus}
-                            language={match[1]}
-                            PreTag="div"
-                            {...props}
-                          >
-                            {String(children).replace(/\n$/, '')}
-                          </SyntaxHighlighter>
-                        ) : (
-                          <code className={className} {...props}>
-                            {children}
-                          </code>
-                        )
-                      },
-                    }}
-                  >
-                    {data.result_text}
-                  </ReactMarkdown>
-                </div>
-              )}
-              {console.log('Draft:', draft)}
-              {console.log('Data:', data)}
             </div>
           </div>
         </div>
