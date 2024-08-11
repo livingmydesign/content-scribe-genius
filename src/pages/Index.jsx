@@ -13,7 +13,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import Cookies from 'js-cookie';
 
 const Index = () => {
   const [formData, setFormData] = useState({
