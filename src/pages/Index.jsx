@@ -172,18 +172,18 @@ const Index = () => {
           </div>
         </div>
       )}
-    </div>
-    {showConsole && (
-      <div className="fixed bottom-0 left-0 right-0 bg-gray-800 text-white p-4 max-h-64 overflow-auto">
-        <div className="flex justify-between items-center mb-2">
-          <h3 className="text-lg font-semibold">Webhook Console</h3>
-          <Button variant="ghost" size="sm" onClick={() => setShowConsole(false)}>
-            <X className="h-4 w-4" />
-          </Button>
+      {showConsole && (
+        <div className="fixed bottom-0 left-0 right-0 bg-gray-800 text-white p-4 max-h-64 overflow-auto">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="text-lg font-semibold">Webhook Console</h3>
+            <Button variant="ghost" size="sm" onClick={() => setShowConsole(false)}>
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          <pre className="text-sm">{JSON.stringify(consoleData, null, 2)}</pre>
         </div>
-        <pre className="text-sm">{JSON.stringify(consoleData, null, 2)}</pre>
-      </div>
-    )}
+      )}
+    </div>
   );
 };
 
