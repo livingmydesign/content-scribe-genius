@@ -121,6 +121,20 @@ const Index = () => {
         console.log('Sanitized data:', parsedData);
         setData(parsedData);
         
+        // Log individual attributes
+        if (Array.isArray(parsedData)) {
+          parsedData.forEach((item, index) => {
+            console.log(`Item ${index}:`);
+            Object.entries(item).forEach(([key, value]) => {
+              console.log(`  ${key}:`, value);
+            });
+          });
+        } else if (typeof parsedData === 'object' && parsedData !== null) {
+          Object.entries(parsedData).forEach(([key, value]) => {
+            console.log(`${key}:`, value);
+          });
+        }
+
         if (Array.isArray(parsedData) && parsedData.length > 0) {
           const firstItem = parsedData[0];
           if (firstItem.is_news) {
