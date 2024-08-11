@@ -359,21 +359,6 @@ const Index = () => {
             </div>
             <div className="w-full sm:w-auto">
               <Button 
-                onClick={() => handleSubmit('post_linkedin')}
-                className="w-full sm:w-auto text-sm sm:text-base py-1 sm:py-2 px-2 sm:px-4 bg-[#0A66C2] hover:bg-[#004182]"
-              >
-              {activeButton === 'post_linkedin' && isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <>
-                  <Send className="mr-2 h-4 w-4" />
-                  Post on LinkedIn
-                </>
-              )}
-              </Button>
-            </div>
-            <div className="w-full sm:w-auto">
-              <Button 
                 onClick={() => handleSubmit('generate_image')}
                 className="w-full sm:w-auto text-sm sm:text-base py-1 sm:py-2 px-2 sm:px-4"
               >
@@ -396,15 +381,6 @@ const Index = () => {
               Upload Image
               </Button>
             </div>
-            <div className="w-full sm:w-auto">
-              <Button 
-                onClick={copyToClipboard}
-                className="w-full sm:w-auto text-sm sm:text-base py-1 sm:py-2 px-2 sm:px-4"
-              >
-              <Copy className="mr-2 h-4 w-4" />
-              Copy for LinkedIn
-              </Button>
-            </div>
             <input
               id="imageUpload"
               type="file"
@@ -412,6 +388,21 @@ const Index = () => {
               onChange={handleImageUpload}
               className="hidden"
             />
+            <div className="w-full sm:w-auto">
+              <Button 
+                onClick={() => handleSubmit('post_linkedin')}
+                className="w-full sm:w-auto text-sm sm:text-base py-1 sm:py-2 px-2 sm:px-4 bg-[#0A66C2] hover:bg-[#004182]"
+              >
+              {activeButton === 'post_linkedin' && isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  <Send className="mr-2 h-4 w-4" />
+                  Post on LinkedIn
+                </>
+              )}
+              </Button>
+            </div>
           </div>
         </div>
       )}
