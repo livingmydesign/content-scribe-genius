@@ -45,7 +45,6 @@ const Index = () => {
   const [dialogContent, setDialogContent] = useState(null);
   const [activeButton, setActiveButton] = useState(null);
   const [scheduledDate, setScheduledDate] = useState(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     const savedContent = sessionStorage.getItem('generatedContent');
