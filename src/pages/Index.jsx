@@ -37,12 +37,18 @@ const Index = () => {
   };
 
   const makeWebhookCall = async (additionalData = {}) => {
+    const get_news = additionalData.get_news || false;
+    const generate_image = additionalData.generate_image || false;
+    const re_generate = additionalData['re-generate'] || false;
+    const post_linkedin = additionalData.post_linkedin || false;
+    
     const payload = {
       ...formData,
-      get_news: additionalData.get_news || false,
-      generate_image: additionalData.generate_image || false,
-      're-generate': additionalData['re-generate'] || false,
-      post_linkedin: additionalData.post_linkedin || false,
+      get_news,
+      generate_image,
+      're-generate': re_generate,
+      post_linkedin,
+      generate: !(get_news || generate_image || re_generate || post_linkedin),
       draft,
       image,
       file_name: fileName,
