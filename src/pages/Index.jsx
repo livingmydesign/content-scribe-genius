@@ -124,7 +124,7 @@ const Index = () => {
       </div>
 
       {isLoading && <p className="mt-4">Loading...</p>}
-      {isError && <p className="mt-4 text-red-500">Error: {error.message}</p>}
+      {error && <p className="mt-4 text-red-500">Error: {error}</p>}
 
       {data && !data.is_news && (
         <div className="mt-8">
