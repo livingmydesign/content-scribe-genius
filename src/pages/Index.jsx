@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import ReactMarkdown from 'react-markdown'
-import { Loader2, X, Minimize2, Maximize2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 
 const Index = () => {
   const [formData, setFormData] = useState({
@@ -47,9 +48,8 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
-  const [consoleData, setConsoleData] = useState(null);
-  const [showConsole, setShowConsole] = useState(false);
-  const [isConsoleMinimized, setIsConsoleMinimized] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [responseData, setResponseData] = useState(null);
 
   const makeWebhookCall = async (action = 'generate') => {
     setIsLoading(true);
@@ -65,15 +65,12 @@ const Index = () => {
       };
       setImageUploaded(false); // Reset the flag after sending the request
 
-      setConsoleData({ request: payload });
-      setShowConsole(true);
-
       const response = await axios.put('https://hook.eu1.make.com/7hok9kqjre31fea5p7yi9ialusmbvlkc', payload);
       
-      // Process the response immediately
       if (response.status === 200 && response.data) {
         setData(response.data);
-        setConsoleData(prevData => ({ ...prevData, response: response.data }));
+        setResponseData(response.data);
+        setDialogOpen(true);
         
         // Update form data and draft based on response
         if (response.data?.is_news && response.data?.result_text) {
@@ -87,18 +84,19 @@ const Index = () => {
         if (response.data?.result_image) {
           setImage(response.data.result_image);
         }
-        
-        // Trigger a re-render
-        setIsLoading(false);
       } else {
         throw new Error('Unexpected response from server');
       }
     } catch (err) {
       setError(err.message || 'An error occurred while processing the request');
-      setConsoleData(prevData => ({ ...prevData, error: err.message }));
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const JsonDisplay = ({ data }) => {
+    const jsonString = JSON.stringify(data, null, 2);
+    return <ReactMarkdown>{`\`\`\`json\n${jsonString}\n\`\`\``}</ReactMarkdown>;
   };
 
   const handleSubmit = (action = 'generate') => {
@@ -186,24 +184,20 @@ const Index = () => {
           </div>
         </div>
       )}
-      {showConsole && (
-        <div className={`fixed bottom-0 left-0 right-0 bg-gray-800 text-white p-4 transition-all duration-300 ease-in-out ${isConsoleMinimized ? 'h-12' : 'max-h-64 overflow-auto'}`}>
-          <div className="flex justify-between items-center mb-2">
-            <h3 className="text-lg font-semibold">Webhook Console</h3>
-            <div className="flex space-x-2">
-              <Button variant="ghost" size="sm" onClick={() => setIsConsoleMinimized(!isConsoleMinimized)}>
-                {isConsoleMinimized ? <Maximize2 className="h-4 w-4" /> : <Minimize2 className="h-4 w-4" />}
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => setShowConsole(false)}>
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-          {!isConsoleMinimized && (
-            <pre className="text-sm">{JSON.stringify(consoleData, null, 2)}</pre>
-          )}
-        </div>
-      )}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Webhook Response</DialogTitle>
+          </DialogHeader>
+          {responseData && <JsonDisplay data={responseData} />}
+          <DialogFooter className="flex justify-between">
+            <Button onClick={() => handleSubmit('re-generate')}>Re-generate</Button>
+            <Button onClick={() => handleSubmit('post_linkedin')}>Post on LinkedIn</Button>
+            <Button onClick={() => handleSubmit('generate_image')}>Generate Image</Button>
+            <Button onClick={() => document.getElementById('imageUpload').click()}>Upload Image</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
