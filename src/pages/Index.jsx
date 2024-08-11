@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+
+const WEBHOOK_URL = 'https://hook.eu1.make.com/7hok9kqjre31fea5p7yi9ialusmbvlkc';
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
@@ -58,7 +60,8 @@ const Index = () => {
     };
     setImageUploaded(false); // Reset the flag after sending the request
 
-    const { data } = await axios.put('https://hook.eu1.make.com/7hok9kqjre31fea5p7yi9ialusmbvlkc', payload);
+    const webhookUrl = 'https://hook.eu1.make.com/7hok9kqjre31fea5p7yi9ialusmbvlkc';
+    const { data } = await axios.put(WEBHOOK_URL, payload);
     return data;
   };
 
