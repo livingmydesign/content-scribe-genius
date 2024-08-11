@@ -126,7 +126,7 @@ const Index = () => {
       {isLoading && <p className="mt-4">Loading...</p>}
       {error && <p className="mt-4 text-red-500">Error: {error}</p>}
 
-      {data && !data.is_news && (
+      {data && !data.is_news && data.result_text && (
         <div className="mt-8">
           <h2 className="text-xl font-semibold mb-2">Generated Content:</h2>
           {data.result_image && (
@@ -134,11 +134,9 @@ const Index = () => {
               <img src={data.result_image} alt="Generated" className="max-w-full h-auto" />
             </div>
           )}
-          {data.result_text && (
-            <div className="bg-gray-100 p-4 rounded-md">
-              <ReactMarkdown>{data.result_text}</ReactMarkdown>
-            </div>
-          )}
+          <div className="bg-gray-100 p-4 rounded-md">
+            <ReactMarkdown>{data.result_text}</ReactMarkdown>
+          </div>
           <div className="mt-4 space-x-2">
             <Button onClick={() => handleSubmit({ 're-generate': true })}>Re-generate</Button>
             <Button onClick={() => handleSubmit({ post_linkedin: true })}>Post on LinkedIn</Button>
