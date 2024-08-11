@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import ReactMarkdown from 'react-markdown'
+import { Loader2 } from "lucide-react"
 
 const Index = () => {
   const [formData, setFormData] = useState({
@@ -67,14 +68,34 @@ const Index = () => {
       setImageUploaded(false); // Reset the flag after sending the request
 
       const response = await axios.put('https://hook.eu1.make.com/7hok9kqjre31fea5p7yi9ialusmbvlkc', payload);
-      setData(response.data);
       
-      if (response.data?.is_news && response.data?.result_text) {
-        setFormData(prevData => ({ ...prevData, news: response.data.result_text }));
-      }
+      // Start polling for results
+      let pollCount = 0;
+      const pollInterval = setInterval(async () => {
+        pollCount++;
+        if (pollCount >= 10) { // Poll for up to 30 seconds (10 * 3s)
+          clearInterval(pollInterval);
+          setError("Timeout: No response received after 30 seconds");
+          setIsLoading(false);
+          return;
+        }
+        
+        try {
+          const pollResponse = await axios.get(`https://hook.eu1.make.com/7hok9kqjre31fea5p7yi9ialusmbvlkc?id=${response.data.id}`);
+          if (pollResponse.data.status === 'completed') {
+            clearInterval(pollInterval);
+            setData(pollResponse.data);
+            if (pollResponse.data?.is_news && pollResponse.data?.result_text) {
+              setFormData(prevData => ({ ...prevData, news: pollResponse.data.result_text }));
+            }
+            setIsLoading(false);
+          }
+        } catch (pollErr) {
+          console.error("Polling error:", pollErr);
+        }
+      }, 3000); // Poll every 3 seconds
     } catch (err) {
       setError(err.message);
-    } finally {
       setIsLoading(false);
     }
   };
@@ -119,11 +140,23 @@ const Index = () => {
           placeholder="Inspiring"
         />
         <Button onClick={() => handleSubmit()} disabled={isLoading}>
-          Generate
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Generating...
+            </>
+          ) : (
+            "Generate"
+          )}
         </Button>
       </div>
 
-      {isLoading && <p className="mt-4">Loading...</p>}
+      {isLoading && (
+        <div className="mt-4 flex items-center">
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          <p>Processing request, please wait...</p>
+        </div>
+      )}
       {error && <p className="mt-4 text-red-500">Error: {error}</p>}
 
       {data && !data.is_news && data.result_text && (
