@@ -396,7 +396,7 @@ const Index = () => {
             <div className="w-full sm:w-auto flex">
               <Button 
                 onClick={() => handleSubmit('post_linkedin')}
-                className="flex-grow sm:flex-grow-0 text-sm sm:text-base py-1 sm:py-2 px-2 sm:px-4 bg-[#0A66C2] hover:bg-[#004182]"
+                className="flex-grow sm:flex-grow-0 text-sm sm:text-base py-1 sm:py-2 px-2 sm:px-4 bg-[#0A66C2] hover:bg-[#004182] mb-10 sm:mb-0"
               >
               {activeButton === 'post_linkedin' && isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
