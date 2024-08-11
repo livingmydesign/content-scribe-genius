@@ -73,8 +73,20 @@ const Index = () => {
 
       const response = await axios.put('https://hook.eu1.make.com/7hok9kqjre31fea5p7yi9ialusmbvlkc', payload);
       
+      console.log("Raw response data:", response.data);
+      
       if (response.status === 200 && response.data) {
-        const parsedData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
+        let parsedData;
+        if (typeof response.data === 'string') {
+          try {
+            parsedData = JSON.parse(response.data.replace(/[\u0000-\u001F\u007F-\u009F]/g, ""));
+          } catch (parseError) {
+            console.error("Error parsing JSON:", parseError);
+            parsedData = { error: "Unable to parse server response" };
+          }
+        } else {
+          parsedData = response.data;
+        }
         setData(parsedData);
         setDialogContent(parsedData);
         setDialogOpen(true);
