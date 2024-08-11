@@ -104,60 +104,29 @@ const Index = () => {
         // Function to sanitize text
         const sanitizeText = (text) => {
           if (typeof text !== 'string') return text;
-          return text.replace(/\\n/g, '\n')  // Replace literal '\n' with newline
-                     .replace(/\\/g, '');    // Remove remaining backslashes
+          return text.replace(/\\n/g, '\n').replace(/\\/g, '');
         };
         
-        // Sanitize the data
-        if (Array.isArray(parsedData)) {
-          parsedData = parsedData.map(item => ({
-            ...item,
-            result_text: sanitizeText(item.result_text)
-          }));
-        } else if (typeof parsedData === 'object' && parsedData !== null) {
-          parsedData.result_text = sanitizeText(parsedData.result_text);
-        }
-        
-        console.log('Sanitized data:', parsedData);
-        setData(parsedData);
-        
-        // Log individual attributes
-        if (Array.isArray(parsedData)) {
-          parsedData.forEach((item, index) => {
-            console.log(`Item ${index}:`);
-            Object.entries(item).forEach(([key, value]) => {
-              console.log(`  ${key}:`, value);
-            });
-          });
-        } else if (typeof parsedData === 'object' && parsedData !== null) {
-          Object.entries(parsedData).forEach(([key, value]) => {
-            console.log(`${key}:`, value);
-          });
-        }
-
+        // Extract and sanitize the result_text and is_news
         if (Array.isArray(parsedData) && parsedData.length > 0) {
-          const firstItem = parsedData[0];
-          if (firstItem.is_news) {
-            console.log('Setting news data:', firstItem.result_text);
-            setFormData(prevData => ({ ...prevData, news: firstItem.result_text }));
+          const { result_text, is_news } = parsedData[0];
+          const sanitizedText = sanitizeText(result_text);
+          
+          setData({ result_text: sanitizedText, is_news });
+          console.log('Extracted data:', { result_text: sanitizedText, is_news });
+          
+          if (is_news) {
+            setFormData(prevData => ({ ...prevData, news: sanitizedText }));
           } else {
-            console.log('Setting draft:', firstItem.result_text);
-            setDraft(firstItem.result_text);
+            setDraft(sanitizedText);
           }
-        } else if (parsedData.result_text) {
-          console.log('Setting draft from non-array response:', parsedData.result_text);
-          setDraft(parsedData.result_text);
-        }
-        
-        if (parsedData.result_image) {
-          console.log('Setting image:', parsedData.result_image);
-          setImage(parsedData.result_image);
+        } else {
+          throw new Error('Unexpected response format from server');
         }
 
         // Store the generated content in sessionStorage
-        sessionStorage.setItem('generatedContent', JSON.stringify(parsedData));
+        sessionStorage.setItem('generatedContent', JSON.stringify({ result_text: sanitizedText, is_news }));
         console.log('Content stored in sessionStorage');
-
       } else {
         throw new Error('Unexpected response from server');
       }
