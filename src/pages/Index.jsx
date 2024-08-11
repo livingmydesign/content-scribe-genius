@@ -271,14 +271,6 @@ const Index = () => {
             <Button onClick={() => handleSubmit('post_linkedin')}>Post on LinkedIn</Button>
             <Button onClick={() => handleSubmit('generate_image')}>Generate Image</Button>
             <Button onClick={() => document.getElementById('imageUpload').click()}>Upload Image</Button>
-            <Button onClick={() => handleSubmit('summarize')}>Summarize</Button>
-            <Button onClick={() => handleSubmit('expand')}>Expand</Button>
-            <Button onClick={() => handleSubmit('translate')}>Translate</Button>
-            <Button onClick={() => handleSubmit('sentiment')}>Sentiment Analysis</Button>
-            <Button onClick={() => handleSubmit('improve')}>Improve</Button>
-            <Button onClick={() => handleSubmit('simplify')}>Simplify</Button>
-            <Button onClick={() => handleSubmit('formalize')}>Formalize</Button>
-            <Button onClick={() => handleSubmit('casual')}>Make Casual</Button>
             <input
               id="imageUpload"
               type="file"
