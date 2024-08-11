@@ -182,22 +182,40 @@ const Index = () => {
     makeWebhookCall(action);
   };
 
-  const copyToClipboard = () => {
-    const content = draft || (data && data.result_text) || '';
-    const formattedContent = content
-      .replace(/^#+\s/gm, '') // Remove Markdown headers
-      .replace(/\*\*/g, '') // Remove bold formatting
-      .replace(/\*/g, '') // Remove italic formatting
-      .replace(/`/g, '') // Remove code formatting
-      .replace(/\n{3,}/g, '\n\n') // Replace multiple newlines with double newlines
-      .trim();
+  const copyToClipboard = async () => {
+    try {
+      const content = draft || (data && data.result_text) || '';
+      const formattedContent = content
+        .replace(/^#+\s/gm, '') // Remove Markdown headers
+        .replace(/\*\*/g, '') // Remove bold formatting
+        .replace(/\*/g, '') // Remove italic formatting
+        .replace(/`/g, '') // Remove code formatting
+        .replace(/\n{3,}/g, '\n\n') // Replace multiple newlines with double newlines
+        .trim();
 
-    navigator.clipboard.writeText(formattedContent).then(() => {
+      await navigator.clipboard.writeText(formattedContent);
       toast.success("Content copied to clipboard!");
-    }).catch(err => {
+    } catch (err) {
       console.error('Failed to copy text: ', err);
       toast.error("Failed to copy content. Please try again.");
-    });
+      
+      // Fallback method for older browsers
+      if (!navigator.clipboard) {
+        const textArea = document.createElement("textarea");
+        textArea.value = formattedContent;
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+          document.execCommand('copy');
+          toast.success("Content copied to clipboard!");
+        } catch (err) {
+          console.error('Fallback: Oops, unable to copy', err);
+          toast.error("Failed to copy content. Please try again.");
+        }
+        document.body.removeChild(textArea);
+      }
+    }
   };
 
   return (
