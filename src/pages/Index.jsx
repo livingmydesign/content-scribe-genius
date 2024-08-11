@@ -78,16 +78,25 @@ const Index = () => {
       if (response.status === 200 && response.data) {
         let parsedData;
         try {
+          // Attempt to parse if it's a string, otherwise use as-is
           parsedData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
           
-          // Additional sanitization
+          // Function to sanitize text
+          const sanitizeText = (text) => {
+            if (typeof text !== 'string') return text;
+            return text.replace(/[\u0000-\u001F\u007F-\u009F]/g, '')
+                       .replace(/\\n/g, '\n')  // Replace literal '\n' with newline
+                       .replace(/\\/g, '');    // Remove remaining backslashes
+          };
+          
+          // Sanitize the data
           if (Array.isArray(parsedData)) {
             parsedData = parsedData.map(item => ({
               ...item,
-              result_text: item.result_text ? item.result_text.replace(/[\u0000-\u001F\u007F-\u009F]/g, '') : ''
+              result_text: sanitizeText(item.result_text)
             }));
           } else if (typeof parsedData === 'object') {
-            parsedData.result_text = parsedData.result_text ? parsedData.result_text.replace(/[\u0000-\u001F\u007F-\u009F]/g, '') : '';
+            parsedData.result_text = sanitizeText(parsedData.result_text);
           }
         } catch (parseError) {
           console.error("Error parsing or sanitizing JSON:", parseError);
