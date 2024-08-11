@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import ReactMarkdown from 'react-markdown'
-import { Loader2, X } from "lucide-react"
+import { Loader2, X, Minimize2, Maximize2 } from "lucide-react"
 
 const Index = () => {
   const [formData, setFormData] = useState({
@@ -49,6 +49,7 @@ const Index = () => {
   const [data, setData] = useState(null);
   const [consoleData, setConsoleData] = useState(null);
   const [showConsole, setShowConsole] = useState(false);
+  const [isConsoleMinimized, setIsConsoleMinimized] = useState(false);
 
   const makeWebhookCall = async (action = 'generate') => {
     setIsLoading(true);
@@ -92,7 +93,7 @@ const Index = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 min-h-screen overflow-y-auto">
       <h1 className="text-2xl font-bold mb-4">Content Generation App</h1>
       <div className="space-y-4">
         <div className="flex space-x-2">
@@ -173,14 +174,21 @@ const Index = () => {
         </div>
       )}
       {showConsole && (
-        <div className="fixed bottom-0 left-0 right-0 bg-gray-800 text-white p-4 max-h-64 overflow-auto">
+        <div className={`fixed bottom-0 left-0 right-0 bg-gray-800 text-white p-4 transition-all duration-300 ease-in-out ${isConsoleMinimized ? 'h-12' : 'max-h-64 overflow-auto'}`}>
           <div className="flex justify-between items-center mb-2">
             <h3 className="text-lg font-semibold">Webhook Console</h3>
-            <Button variant="ghost" size="sm" onClick={() => setShowConsole(false)}>
-              <X className="h-4 w-4" />
-            </Button>
+            <div className="flex space-x-2">
+              <Button variant="ghost" size="sm" onClick={() => setIsConsoleMinimized(!isConsoleMinimized)}>
+                {isConsoleMinimized ? <Maximize2 className="h-4 w-4" /> : <Minimize2 className="h-4 w-4" />}
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => setShowConsole(false)}>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-          <pre className="text-sm">{JSON.stringify(consoleData, null, 2)}</pre>
+          {!isConsoleMinimized && (
+            <pre className="text-sm">{JSON.stringify(consoleData, null, 2)}</pre>
+          )}
         </div>
       )}
     </div>
