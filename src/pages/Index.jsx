@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { useQuery } from "@tanstack/react-query";
 import ReactMarkdown from 'react-markdown'
 import { Loader2 } from "lucide-react"
+import JSON5 from 'json5';
 import {
   Dialog,
   DialogContent,
@@ -98,7 +99,21 @@ const Index = () => {
       console.log("Raw webhook response:", response.data);
       
       if (response.status === 200 && response.data) {
-        let parsedData = response.data;
+        let parsedData;
+        try {
+          // Try parsing with JSON5 for more lenient parsing
+          parsedData = JSON5.parse(response.data);
+        } catch (parseError) {
+          console.error('Error parsing response with JSON5:', parseError);
+          // If JSON5 fails, try with regular JSON as a fallback
+          try {
+            parsedData = JSON.parse(response.data);
+          } catch (jsonError) {
+            console.error('Error parsing response with JSON:', jsonError);
+            throw new Error('Failed to parse server response');
+          }
+        }
+        
         console.log('Parsed response data:', parsedData);
         
         // Function to sanitize text
