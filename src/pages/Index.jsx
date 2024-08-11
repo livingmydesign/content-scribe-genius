@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import ReactMarkdown from 'react-markdown'
+import { toast } from "sonner"
 
 const Index = () => {
   const [formData, setFormData] = useState({
@@ -64,6 +65,15 @@ const Index = () => {
     queryKey: ['contentGeneration'],
     queryFn: () => makeWebhookCall(),
     enabled: false,
+    onSuccess: (data) => {
+      if (data.is_news) {
+        setFormData(prevData => ({ ...prevData, news: data.result_text }));
+        toast.success("News fetched successfully!");
+      }
+    },
+    onError: (error) => {
+      toast.error(`Error: ${error.message}`);
+    }
   });
 
   const handleSubmit = (additionalData = {}) => {
@@ -113,7 +123,7 @@ const Index = () => {
       {isLoading && <p className="mt-4">Loading...</p>}
       {isError && <p className="mt-4 text-red-500">Error: {error.message}</p>}
 
-      {data && data.result_text && (
+      {data && !data.is_news && data.result_text && (
         <div className="mt-8">
           <h2 className="text-xl font-semibold mb-2">Generated Content:</h2>
           <div className="bg-gray-100 p-4 rounded-md">
