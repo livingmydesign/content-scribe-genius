@@ -411,7 +411,17 @@ const Index = () => {
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className={`ml-2 w-10 h-10 p-0 bg-[#0A66C2] hover:bg-[#004182] ${scheduledDate ? 'text-white' : 'text-white'}`}
+                    className={`ml-2 w-10 h-10 p-0 ${
+                      scheduledDate 
+                        ? 'bg-red-500 hover:bg-red-600' 
+                        : 'bg-[#0A66C2] hover:bg-[#004182]'
+                    } text-white`}
+                    onClick={(e) => {
+                      if (scheduledDate) {
+                        e.preventDefault();
+                        setScheduledDate(null);
+                      }
+                    }}
                   >
                     <Calendar className="h-4 w-4" />
                   </Button>
@@ -420,7 +430,13 @@ const Index = () => {
                   <CalendarComponent
                     mode="single"
                     selected={scheduledDate}
-                    onSelect={setScheduledDate}
+                    onSelect={(date) => {
+                      if (date === scheduledDate) {
+                        setScheduledDate(null);
+                      } else {
+                        setScheduledDate(date);
+                      }
+                    }}
                     initialFocus
                   />
                 </PopoverContent>
