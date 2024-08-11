@@ -5,9 +5,7 @@ import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <head>
-      <meta httpEquiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval'" />
-    </head>
+    {/* Remove the CSP meta tag from here */}
     <App />
   </React.StrictMode>,
 );

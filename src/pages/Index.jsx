@@ -73,6 +73,7 @@ const Index = () => {
   const [dialogContent, setDialogContent] = useState(null);
 
   const makeWebhookCall = async (action = 'generate') => {
+    console.log(`Starting webhook call for action: ${action}`);
     setIsLoading(true);
     setError(null);
     try {
@@ -84,6 +85,7 @@ const Index = () => {
         file_name: fileName || null,
         image_url: data?.result_image || null,
       };
+      console.log('Payload prepared:', payload);
       setImageUploaded(false); // Reset the flag after sending the request
 
       const response = await axios.put('https://hook.eu1.make.com/7hok9kqjre31fea5p7yi9ialusmbvlkc', payload, {
@@ -97,6 +99,7 @@ const Index = () => {
       
       if (response.status === 200 && response.data) {
         let parsedData = response.data;
+        console.log('Parsed response data:', parsedData);
         
         // Function to sanitize text
         const sanitizeText = (text) => {
@@ -115,35 +118,43 @@ const Index = () => {
           parsedData.result_text = sanitizeText(parsedData.result_text);
         }
         
+        console.log('Sanitized data:', parsedData);
         setData(parsedData);
         
         if (Array.isArray(parsedData) && parsedData.length > 0) {
           const firstItem = parsedData[0];
           if (firstItem.is_news) {
+            console.log('Setting news data:', firstItem.result_text);
             setFormData(prevData => ({ ...prevData, news: firstItem.result_text }));
           } else {
+            console.log('Setting draft:', firstItem.result_text);
             setDraft(firstItem.result_text);
           }
         } else if (parsedData.result_text) {
+          console.log('Setting draft from non-array response:', parsedData.result_text);
           setDraft(parsedData.result_text);
         }
         
         if (parsedData.result_image) {
+          console.log('Setting image:', parsedData.result_image);
           setImage(parsedData.result_image);
         }
 
         // Store the generated content in sessionStorage
         sessionStorage.setItem('generatedContent', JSON.stringify(parsedData));
+        console.log('Content stored in sessionStorage');
 
       } else {
         throw new Error('Unexpected response from server');
       }
     } catch (err) {
+      console.error('Error in makeWebhookCall:', err);
       setError(err.message || 'An error occurred while processing the request');
       setDialogContent({ error: err.message });
       setDialogOpen(true);
     } finally {
       setIsLoading(false);
+      console.log('Webhook call completed');
     }
   };
 
@@ -225,6 +236,13 @@ const Index = () => {
                   <ReactMarkdown>{draft}</ReactMarkdown>
                 </div>
               )}
+              {!draft && data && data.result_text && (
+                <div className="bg-gray-100 p-4 rounded-md">
+                  <ReactMarkdown>{data.result_text}</ReactMarkdown>
+                </div>
+              )}
+              {console.log('Draft:', draft)}
+              {console.log('Data:', data)}
             </div>
           </div>
         </div>
