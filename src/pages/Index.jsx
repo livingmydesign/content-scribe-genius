@@ -75,9 +75,6 @@ const Index = () => {
       
       console.log("Webhook response:", response.data);
       
-      // Set the raw response data
-      setData(response.data);
-      
       if (response.status === 200 && response.data) {
         let parsedData = response.data;
         if (typeof parsedData === 'string') {
@@ -89,11 +86,15 @@ const Index = () => {
           }
         }
         
-        if (parsedData?.result_text) {
+        setData(parsedData);
+        
+        if (parsedData.is_news) {
+          setFormData(prevData => ({ ...prevData, news: parsedData.result_text }));
+        } else {
           setDraft(parsedData.result_text);
         }
         
-        if (parsedData?.result_image) {
+        if (parsedData.result_image) {
           setImage(parsedData.result_image);
         }
       } else {
@@ -167,46 +168,27 @@ const Index = () => {
       )}
       {error && <p className="mt-4 text-red-500">Error: {error}</p>}
 
-      {data && (
-        <div className="mt-8">
-          <h2 className="text-xl font-semibold mb-2">Webhook Response:</h2>
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold mb-2">Raw JSON Response:</h3>
-            <pre className="bg-gray-100 p-4 rounded-md overflow-x-auto">
-              {JSON.stringify(data, null, 2)}
-            </pre>
-          </div>
-          {data.result_text && (
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold mb-2">Result Text:</h3>
-              <div className="bg-gray-100 p-4 rounded-md">
-                <ReactMarkdown>{data.result_text}</ReactMarkdown>
-              </div>
-            </div>
-          )}
-          {data.result_image && (
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold mb-2">Result Image:</h3>
-              <img src={data.result_image} alt="Generated" className="max-w-full h-auto rounded-md" />
-            </div>
-          )}
-        </div>
-      )}
-      {draft && (
+      {data && !data.is_news && (
         <div className="mt-8">
           <h2 className="text-xl font-semibold mb-2">Generated Content:</h2>
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
-              {image && (
+              {data.result_image && (
                 <div className="mb-4">
-                  <img src={image} alt="Generated" className="max-w-full h-auto rounded-md" />
+                  <img src={data.result_image} alt="Generated" className="max-w-full h-auto rounded-md" />
                 </div>
               )}
-              <div className="bg-gray-100 p-4 rounded-md">
-                <ReactMarkdown>{draft}</ReactMarkdown>
-              </div>
+              {data.result_text && (
+                <div className="bg-gray-100 p-4 rounded-md">
+                  <ReactMarkdown>{data.result_text}</ReactMarkdown>
+                </div>
+              )}
             </div>
           </div>
+        </div>
+      )}
+      {draft && (
+        <div className="mt-8">
           <div className="mt-4 flex flex-wrap gap-2">
             <Button onClick={() => handleSubmit('re-generate')}>Re-generate</Button>
             <Button onClick={() => handleSubmit('post_linkedin')}>Post on LinkedIn</Button>
