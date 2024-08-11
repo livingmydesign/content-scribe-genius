@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
-import { Loader2, Copy, RefreshCw, Send, Image, Upload, Repeat } from "lucide-react"
+import { Loader2, Copy, RefreshCw, Send, Image, Upload, Repeat, Calendar } from "lucide-react"
 import JSON5 from 'json5';
 import {
   Dialog,
@@ -17,6 +17,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { toast } from "sonner"
+import { Calendar as CalendarComponent } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { format } from "date-fns"
 
 const Index = () => {
   const [formData, setFormData] = useState({
@@ -35,6 +38,7 @@ const Index = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogContent, setDialogContent] = useState(null);
   const [activeButton, setActiveButton] = useState(null);
+  const [scheduledDate, setScheduledDate] = useState(null);
 
   useEffect(() => {
     const savedContent = sessionStorage.getItem('generatedContent');
@@ -94,6 +98,7 @@ const Index = () => {
         image: image || null,
         file_name: fileName || null,
         image_url: data?.result_image || null,
+        scheduled_date: scheduledDate ? format(scheduledDate, 'yyyy-MM-dd') : null,
       };
       console.log('Payload prepared:', payload);
       setImageUploaded(false); // Reset the flag after sending the request
@@ -403,6 +408,33 @@ const Index = () => {
               )}
               </Button>
             </div>
+            <div className="w-full sm:w-auto">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={`w-10 h-10 p-0 ${scheduledDate ? 'text-primary' : ''}`}
+                  >
+                    <Calendar className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="end">
+                  <CalendarComponent
+                    mode="single"
+                    selected={scheduledDate}
+                    onSelect={setScheduledDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          </div>
+        </div>
+      )}
+      {scheduledDate && (
+        <div className="fixed bottom-20 left-0 right-0 bg-white bg-opacity-60 backdrop-blur-sm p-2 shadow-md">
+          <div className="container mx-auto text-center">
+            <p className="text-sm">Scheduled for: {format(scheduledDate, 'PPP')}</p>
           </div>
         </div>
       )}
