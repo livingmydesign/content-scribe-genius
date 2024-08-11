@@ -76,7 +76,11 @@ const Index = () => {
         setImageUploaded(true);
         
         // Trigger webhook with image data
-        await makeWebhookCall('upload_image');
+        await makeWebhookCall({
+          upload_image: true,
+          image: imageData,
+          file_name: file.name
+        });
       };
       reader.readAsDataURL(file);
     }
@@ -88,12 +92,12 @@ const Index = () => {
     setError(null);
     try {
       const payload = {
-        action,
         ...formData,
+        action,
         draft,
-        image: imageUploaded ? image : null,
-        file_name: imageUploaded ? fileName : null,
-        image_url: !imageUploaded && data?.result_image ? data.result_image : null,
+        image: image || null,
+        file_name: fileName || null,
+        image_url: data?.result_image || null,
         scheduled_date: scheduledDate ? format(scheduledDate, 'yyyy-MM-dd') : null,
       };
       console.log('Payload prepared:', payload);
