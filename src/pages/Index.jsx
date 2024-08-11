@@ -13,7 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { collection, addDoc, getDocs, query, orderBy, limit } from "firebase/firestore";
-import { db } from "../App";
+import { getFirestore } from "firebase/firestore";
 
 const Index = () => {
   const [formData, setFormData] = useState({
@@ -27,15 +27,10 @@ const Index = () => {
   const [fileName, setFileName] = useState('');
   const [imageUploaded, setImageUploaded] = useState(false);
 
-  const [firebaseEnabled, setFirebaseEnabled] = useState(true);
-
   useEffect(() => {
     const fetchLatestContent = async () => {
-      if (!db) {
-        setFirebaseEnabled(false);
-        return;
-      }
       try {
+        const db = getFirestore();
         const q = query(collection(db, "generatedContent"), orderBy("timestamp", "desc"), limit(1));
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
@@ -50,7 +45,6 @@ const Index = () => {
         });
       } catch (error) {
         console.error("Error fetching latest content:", error);
-        setFirebaseEnabled(false);
       }
     };
 
@@ -144,26 +138,19 @@ const Index = () => {
           setImage(parsedData.result_image);
         }
 
-        // Store the generated content in Firebase if enabled
-        if (firebaseEnabled && db) {
-          try {
-            await addDoc(collection(db, "generatedContent"), {
-              content: parsedData,
-              timestamp: new Date()
-            });
-          } catch (firebaseError) {
-            console.error("Error storing data in Firebase:", firebaseError);
-            setFirebaseEnabled(false);
-          }
-        }
+        // Store the generated content in Firebase
+        const db = getFirestore();
+        await addDoc(collection(db, "generatedContent"), {
+          content: parsedData,
+          timestamp: new Date()
+        });
 
       } else {
         throw new Error('Unexpected response from server');
       }
     } catch (err) {
-      console.error("Error in makeWebhookCall:", err);
-      setError('An error occurred while processing the request. Please try again.');
-      setDialogContent({ error: 'An error occurred while processing the request. Please try again.' });
+      setError(err.message || 'An error occurred while processing the request');
+      setDialogContent({ error: err.message });
       setDialogOpen(true);
     } finally {
       setIsLoading(false);
