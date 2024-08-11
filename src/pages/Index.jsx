@@ -342,7 +342,11 @@ const Index = () => {
       {draft && (
         <div className="fixed bottom-0 left-0 right-0 bg-white bg-opacity-60 backdrop-blur-sm p-4 pb-11 shadow-md">
           <div className="container mx-auto flex flex-wrap justify-center gap-2">
-            <Button onClick={() => handleSubmit('re-generate')}>
+            <div className="w-full sm:w-auto">
+              <Button 
+                onClick={() => handleSubmit('re-generate')}
+                className="w-full sm:w-auto text-sm sm:text-base py-1 sm:py-2 px-2 sm:px-4"
+              >
               {activeButton === 're-generate' && isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
@@ -352,10 +356,12 @@ const Index = () => {
                 </>
               )}
             </Button>
-            <Button 
-              onClick={() => handleSubmit('post_linkedin')}
-              className="bg-[#0A66C2] hover:bg-[#004182]"
-            >
+            </div>
+            <div className="w-full sm:w-auto">
+              <Button 
+                onClick={() => handleSubmit('post_linkedin')}
+                className="w-full sm:w-auto text-sm sm:text-base py-1 sm:py-2 px-2 sm:px-4 bg-[#0A66C2] hover:bg-[#004182]"
+              >
               {activeButton === 'post_linkedin' && isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
@@ -364,8 +370,13 @@ const Index = () => {
                   Post on LinkedIn
                 </>
               )}
-            </Button>
-            <Button onClick={() => handleSubmit('generate_image')}>
+              </Button>
+            </div>
+            <div className="w-full sm:w-auto">
+              <Button 
+                onClick={() => handleSubmit('generate_image')}
+                className="w-full sm:w-auto text-sm sm:text-base py-1 sm:py-2 px-2 sm:px-4"
+              >
               {activeButton === 'generate_image' && isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
@@ -374,15 +385,26 @@ const Index = () => {
                   Generate Image
                 </>
               )}
-            </Button>
-            <Button onClick={() => document.getElementById('imageUpload').click()}>
+              </Button>
+            </div>
+            <div className="w-full sm:w-auto">
+              <Button 
+                onClick={() => document.getElementById('imageUpload').click()}
+                className="w-full sm:w-auto text-sm sm:text-base py-1 sm:py-2 px-2 sm:px-4"
+              >
               <Upload className="mr-2 h-4 w-4" />
               Upload Image
-            </Button>
-            <Button onClick={copyToClipboard}>
+              </Button>
+            </div>
+            <div className="w-full sm:w-auto">
+              <Button 
+                onClick={copyToClipboard}
+                className="w-full sm:w-auto text-sm sm:text-base py-1 sm:py-2 px-2 sm:px-4"
+              >
               <Copy className="mr-2 h-4 w-4" />
               Copy for LinkedIn
-            </Button>
+              </Button>
+            </div>
             <input
               id="imageUpload"
               type="file"
