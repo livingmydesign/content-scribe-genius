@@ -73,19 +73,28 @@ const Index = () => {
 
       const response = await axios.put('https://hook.eu1.make.com/7hok9kqjre31fea5p7yi9ialusmbvlkc', payload);
       
-      console.log("Webhook response:", response.data);
+      console.log("Raw webhook response:", response.data);
       
       if (response.status === 200 && response.data) {
         let parsedData;
-        if (typeof response.data === 'string') {
-          try {
-            parsedData = JSON.parse(response.data);
-          } catch (parseError) {
-            console.error("Error parsing JSON:", parseError);
-            throw new Error("Unable to parse server response");
+        try {
+          parsedData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
+          
+          // Additional sanitization
+          if (Array.isArray(parsedData)) {
+            parsedData = parsedData.map(item => ({
+              ...item,
+              result_text: item.result_text ? item.result_text.replace(/[\u0000-\u001F\u007F-\u009F]/g, '') : ''
+            }));
+          } else if (typeof parsedData === 'object') {
+            parsedData.result_text = parsedData.result_text ? parsedData.result_text.replace(/[\u0000-\u001F\u007F-\u009F]/g, '') : '';
           }
-        } else {
-          parsedData = response.data;
+        } catch (parseError) {
+          console.error("Error parsing or sanitizing JSON:", parseError);
+          setError("Unable to parse server response. Please try again.");
+          setDialogContent({ error: "Server response parsing error. Please try again." });
+          setDialogOpen(true);
+          return;
         }
         
         setData(parsedData);
