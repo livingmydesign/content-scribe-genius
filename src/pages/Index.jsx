@@ -73,23 +73,19 @@ const Index = () => {
 
       const response = await axios.put('https://hook.eu1.make.com/7hok9kqjre31fea5p7yi9ialusmbvlkc', payload);
       
-      console.log("Raw response data:", response.data);
+      console.log("Webhook response:", response.data);
       
       if (response.status === 200 && response.data) {
-        let parsedData;
-        if (typeof response.data === 'string') {
+        let parsedData = response.data;
+        if (typeof parsedData === 'string') {
           try {
-            parsedData = JSON.parse(response.data.replace(/[\u0000-\u001F\u007F-\u009F]/g, ""));
+            parsedData = JSON.parse(parsedData.replace(/[\u0000-\u001F\u007F-\u009F]/g, ""));
           } catch (parseError) {
             console.error("Error parsing JSON:", parseError);
             parsedData = { error: "Unable to parse server response" };
           }
-        } else {
-          parsedData = response.data;
         }
         setData(parsedData);
-        setDialogContent(parsedData);
-        setDialogOpen(true);
         
         if (parsedData?.result_text) {
           setDraft(parsedData.result_text);
@@ -169,6 +165,25 @@ const Index = () => {
       )}
       {error && <p className="mt-4 text-red-500">Error: {error}</p>}
 
+      {data && (
+        <div className="mt-8">
+          <h2 className="text-xl font-semibold mb-2">Webhook Response:</h2>
+          {data.result_text && (
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold mb-2">Result Text:</h3>
+              <div className="bg-gray-100 p-4 rounded-md">
+                <ReactMarkdown>{data.result_text}</ReactMarkdown>
+              </div>
+            </div>
+          )}
+          {data.result_image && (
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold mb-2">Result Image:</h3>
+              <img src={data.result_image} alt="Generated" className="max-w-full h-auto rounded-md" />
+            </div>
+          )}
+        </div>
+      )}
       {draft && (
         <div className="mt-8">
           <h2 className="text-xl font-semibold mb-2">Generated Content:</h2>
@@ -207,41 +222,6 @@ const Index = () => {
           </div>
         </div>
       )}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Webhook Response</DialogTitle>
-            <DialogDescription>
-              Here's the response from the webhook:
-            </DialogDescription>
-          </DialogHeader>
-          {dialogContent && (
-            <div className="mt-4">
-              <h3 className="text-lg font-semibold mb-2">Result Text:</h3>
-              <div className="bg-gray-100 p-4 rounded-md overflow-auto max-h-96">
-                <ReactMarkdown>
-                  {typeof dialogContent === 'string'
-                    ? JSON.parse(dialogContent).result_text
-                    : dialogContent.result_text}
-                </ReactMarkdown>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Webhook Response</DialogTitle>
-            <DialogDescription>
-              Here's the response from the webhook:
-            </DialogDescription>
-          </DialogHeader>
-          <pre className="bg-gray-100 p-4 rounded-md overflow-auto max-h-96">
-            {JSON.stringify(dialogContent, null, 2)}
-          </pre>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
