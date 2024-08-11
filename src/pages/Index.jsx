@@ -222,7 +222,7 @@ const Index = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 min-h-screen overflow-y-auto">
+    <div className="container mx-auto p-4 pb-40 min-h-screen overflow-y-auto">
       <h1 className="text-2xl font-bold mb-4">Content Generation App</h1>
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
