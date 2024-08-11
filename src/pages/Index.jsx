@@ -13,7 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { collection, addDoc, getDocs, query, orderBy, limit } from "firebase/firestore";
-import { getFirestore } from "firebase/firestore";
+import { db } from "../App";
 
 const Index = () => {
   const [formData, setFormData] = useState({
@@ -30,7 +30,6 @@ const Index = () => {
   useEffect(() => {
     const fetchLatestContent = async () => {
       try {
-        const db = getFirestore();
         const q = query(collection(db, "generatedContent"), orderBy("timestamp", "desc"), limit(1));
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
@@ -139,7 +138,6 @@ const Index = () => {
         }
 
         // Store the generated content in Firebase
-        const db = getFirestore();
         await addDoc(collection(db, "generatedContent"), {
           content: parsedData,
           timestamp: new Date()
