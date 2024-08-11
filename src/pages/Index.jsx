@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
-import { Loader2, Copy, RefreshCw } from "lucide-react"
+import { Loader2, Copy, RefreshCw, Send, Image, Upload, Repeat } from "lucide-react"
 import JSON5 from 'json5';
 import {
   Dialog,
@@ -268,7 +268,10 @@ const Index = () => {
           {activeButton === 'generate' && isLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
-            "Generate"
+            <>
+              <Send className="mr-2 h-4 w-4" />
+              Generate
+            </>
           )}
         </Button>
       </div>
@@ -343,24 +346,37 @@ const Index = () => {
               {activeButton === 're-generate' && isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                "Re-generate"
+                <>
+                  <Repeat className="mr-2 h-4 w-4" />
+                  Re-generate
+                </>
               )}
             </Button>
-            <Button onClick={() => handleSubmit('post_linkedin')}>
+            <Button 
+              onClick={() => handleSubmit('post_linkedin')}
+              className="bg-[#0A66C2] hover:bg-[#004182]"
+            >
               {activeButton === 'post_linkedin' && isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                "Post on LinkedIn"
+                <>
+                  <Send className="mr-2 h-4 w-4" />
+                  Post on LinkedIn
+                </>
               )}
             </Button>
             <Button onClick={() => handleSubmit('generate_image')}>
               {activeButton === 'generate_image' && isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                "Generate Image"
+                <>
+                  <Image className="mr-2 h-4 w-4" />
+                  Generate Image
+                </>
               )}
             </Button>
             <Button onClick={() => document.getElementById('imageUpload').click()}>
+              <Upload className="mr-2 h-4 w-4" />
               Upload Image
             </Button>
             <Button onClick={copyToClipboard}>
