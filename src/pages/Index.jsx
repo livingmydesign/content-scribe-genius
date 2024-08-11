@@ -4,7 +4,14 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import ReactMarkdown from 'react-markdown'
-import { Loader2, X, Minimize2, Maximize2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import {
   Dialog,
   DialogContent,
@@ -73,21 +80,15 @@ const Index = () => {
 
       const response = await axios.put('https://hook.eu1.make.com/7hok9kqjre31fea5p7yi9ialusmbvlkc', payload);
       
-      // Process the response immediately
       if (response.status === 200 && response.data) {
         setData(response.data);
         setDialogContent(response.data);
         setDialogOpen(true);
         
-        // Update form data and draft based on response
-        if (response.data?.is_news && response.data?.result_text) {
-          setFormData(prevData => ({ ...prevData, news: response.data.result_text }));
-        }
         if (response.data?.result_text) {
           setDraft(response.data.result_text);
         }
         
-        // Update image if present in response
         if (response.data?.result_image) {
           setImage(response.data.result_image);
         }
@@ -176,14 +177,6 @@ const Index = () => {
                 <ReactMarkdown>{draft}</ReactMarkdown>
               </div>
             </div>
-            <div className="flex-1">
-              {data && (
-                <div className="bg-gray-100 p-4 rounded-md">
-                  <h3 className="text-lg font-semibold mb-2">Response:</h3>
-                  <ReactMarkdown>{JSON.stringify(data, null, 2)}</ReactMarkdown>
-                </div>
-              )}
-            </div>
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
             <Button onClick={() => handleSubmit('re-generate')}>Re-generate</Button>
@@ -194,6 +187,10 @@ const Index = () => {
             <Button onClick={() => handleSubmit('expand')}>Expand</Button>
             <Button onClick={() => handleSubmit('translate')}>Translate</Button>
             <Button onClick={() => handleSubmit('sentiment')}>Sentiment Analysis</Button>
+            <Button onClick={() => handleSubmit('improve')}>Improve</Button>
+            <Button onClick={() => handleSubmit('simplify')}>Simplify</Button>
+            <Button onClick={() => handleSubmit('formalize')}>Formalize</Button>
+            <Button onClick={() => handleSubmit('casual')}>Make Casual</Button>
             <input
               id="imageUpload"
               type="file"
@@ -204,6 +201,28 @@ const Index = () => {
           </div>
         </div>
       )}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Webhook Response</DialogTitle>
+            <DialogDescription>
+              Here's the response from the webhook:
+            </DialogDescription>
+          </DialogHeader>
+          {dialogContent && dialogContent.result_text ? (
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold mb-2">Result Text:</h3>
+              <div className="bg-gray-100 p-4 rounded-md overflow-auto max-h-96">
+                <ReactMarkdown>{dialogContent.result_text}</ReactMarkdown>
+              </div>
+            </div>
+          ) : (
+            <pre className="bg-gray-100 p-4 rounded-md overflow-auto max-h-96">
+              {JSON.stringify(dialogContent, null, 2)}
+            </pre>
+          )}
+        </DialogContent>
+      </Dialog>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
