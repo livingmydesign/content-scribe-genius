@@ -242,7 +242,7 @@ const Index = () => {
           />
           <Button 
             onClick={() => handleSubmit('get_news')} 
-            className="h-24 sm:w-24 bg-gradient-to-r from-[#A062F9] to-[#1A77DA] hover:from-[#8A4EE8] hover:to-[#1665C0] transition-all duration-300 shadow-md hover:shadow-lg"
+            className="h-12 sm:h-24 sm:w-24 bg-gradient-to-r from-[#A062F9] to-[#1A77DA] hover:from-[#8A4EE8] hover:to-[#1665C0] transition-all duration-300 shadow-md hover:shadow-lg"
           >
             {activeButton === 'get_news' && isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
