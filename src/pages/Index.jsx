@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
+import { useQuery } from "@tanstack/react-query";
 import ReactMarkdown from 'react-markdown'
 import { Loader2 } from "lucide-react"
 import {
@@ -85,7 +86,12 @@ const Index = () => {
       };
       setImageUploaded(false); // Reset the flag after sending the request
 
-      const response = await axios.put('https://hook.eu1.make.com/7hok9kqjre31fea5p7yi9ialusmbvlkc', payload);
+      const response = await axios.put('https://hook.eu1.make.com/7hok9kqjre31fea5p7yi9ialusmbvlkc', payload, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
+      });
       
       console.log("Raw webhook response:", response.data);
       
@@ -152,6 +158,7 @@ const Index = () => {
         <div className="flex space-x-2">
           <Textarea
             name="news"
+            id="news"
             value={formData.news}
             onChange={handleInputChange}
             placeholder="Enter news..."
@@ -164,18 +171,21 @@ const Index = () => {
         </div>
         <Input
           name="personal"
+          id="personal"
           value={formData.personal}
           onChange={handleInputChange}
           placeholder="Personal"
         />
         <Input
           name="controversial"
+          id="controversial"
           value={formData.controversial}
           onChange={handleInputChange}
           placeholder="Controversial"
         />
         <Input
           name="inspiring"
+          id="inspiring"
           value={formData.inspiring}
           onChange={handleInputChange}
           placeholder="Inspiring"
