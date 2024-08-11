@@ -76,33 +76,23 @@ const Index = () => {
       console.log("Raw webhook response:", response.data);
       
       if (response.status === 200 && response.data) {
-        let parsedData;
-        try {
-          // Attempt to parse if it's a string, otherwise use as-is
-          parsedData = typeof response.data === 'string' ? JSON.parse(response.data.replace(/[\u0000-\u001F\u007F-\u009F]/g, '')) : response.data;
-          
-          // Function to sanitize text
-          const sanitizeText = (text) => {
-            if (typeof text !== 'string') return text;
-            return text.replace(/\\n/g, '\n')  // Replace literal '\n' with newline
-                       .replace(/\\/g, '');    // Remove remaining backslashes
-          };
-          
-          // Sanitize the data
-          if (Array.isArray(parsedData)) {
-            parsedData = parsedData.map(item => ({
-              ...item,
-              result_text: sanitizeText(item.result_text)
-            }));
-          } else if (typeof parsedData === 'object') {
-            parsedData.result_text = sanitizeText(parsedData.result_text);
-          }
-        } catch (parseError) {
-          console.error("Error parsing or sanitizing JSON:", parseError);
-          setError("Unable to parse server response. Please try again.");
-          setDialogContent({ error: "Server response parsing error. Please try again." });
-          setDialogOpen(true);
-          return;
+        let parsedData = response.data;
+        
+        // Function to sanitize text
+        const sanitizeText = (text) => {
+          if (typeof text !== 'string') return text;
+          return text.replace(/\\n/g, '\n')  // Replace literal '\n' with newline
+                     .replace(/\\/g, '');    // Remove remaining backslashes
+        };
+        
+        // Sanitize the data
+        if (Array.isArray(parsedData)) {
+          parsedData = parsedData.map(item => ({
+            ...item,
+            result_text: sanitizeText(item.result_text)
+          }));
+        } else if (typeof parsedData === 'object' && parsedData !== null) {
+          parsedData.result_text = sanitizeText(parsedData.result_text);
         }
         
         setData(parsedData);
