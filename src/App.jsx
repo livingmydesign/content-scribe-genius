@@ -15,8 +15,17 @@ const firebaseConfig = {
   appId: "1:1037011428840:web:a1e9d9f7d8e6c9f1c9c9c9"
 };
 
-export const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
+let app, db;
+try {
+  app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+} catch (error) {
+  console.error("Error initializing Firebase:", error);
+  app = null;
+  db = null;
+}
+
+export { app, db };
 
 const queryClient = new QueryClient();
 

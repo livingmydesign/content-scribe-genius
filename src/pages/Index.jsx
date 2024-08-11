@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog"
 import { collection, addDoc, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { db } from "../App";
+import { useState, useEffect } from 'react';
 
 const Index = () => {
   const [formData, setFormData] = useState({
@@ -27,8 +28,14 @@ const Index = () => {
   const [fileName, setFileName] = useState('');
   const [imageUploaded, setImageUploaded] = useState(false);
 
+  const [firebaseEnabled, setFirebaseEnabled] = useState(true);
+
   useEffect(() => {
     const fetchLatestContent = async () => {
+      if (!db) {
+        setFirebaseEnabled(false);
+        return;
+      }
       try {
         const q = query(collection(db, "generatedContent"), orderBy("timestamp", "desc"), limit(1));
         const querySnapshot = await getDocs(q);
@@ -44,6 +51,7 @@ const Index = () => {
         });
       } catch (error) {
         console.error("Error fetching latest content:", error);
+        setFirebaseEnabled(false);
       }
     };
 
@@ -137,15 +145,17 @@ const Index = () => {
           setImage(parsedData.result_image);
         }
 
-        // Store the generated content in Firebase
-        try {
-          await addDoc(collection(db, "generatedContent"), {
-            content: parsedData,
-            timestamp: new Date()
-          });
-        } catch (firebaseError) {
-          console.error("Error storing data in Firebase:", firebaseError);
-          // Continue execution even if Firebase storage fails
+        // Store the generated content in Firebase if enabled
+        if (firebaseEnabled && db) {
+          try {
+            await addDoc(collection(db, "generatedContent"), {
+              content: parsedData,
+              timestamp: new Date()
+            });
+          } catch (firebaseError) {
+            console.error("Error storing data in Firebase:", firebaseError);
+            setFirebaseEnabled(false);
+          }
         }
 
       } else {
