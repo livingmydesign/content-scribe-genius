@@ -443,11 +443,13 @@ const Index = () => {
               </Popover>
             </div>
           </div>
-          {scheduledDate && (
-            <div className="container mx-auto text-center mt-2">
+          <div className="container mx-auto text-center mt-2 h-6">
+            {scheduledDate ? (
               <p className="text-sm">Scheduled for: {format(scheduledDate, 'PPP')}</p>
-            </div>
-          )}
+            ) : (
+              <p className="text-sm text-transparent">Placeholder</p>
+            )}
+          </div>
         </div>
       )}
     </div>
