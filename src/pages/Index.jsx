@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { useQuery } from "@tanstack/react-query";
 import ReactMarkdown from 'react-markdown'
+import { Components } from 'react-markdown/lib/ast-to-react'
 import { Loader2 } from "lucide-react"
 import JSON5 from 'json5';
 import {
@@ -250,12 +251,24 @@ const Index = () => {
               )}
               {draft && (
                 <div className="bg-gray-100 p-4 rounded-md">
-                  <ReactMarkdown>{draft}</ReactMarkdown>
+                  <ReactMarkdown
+                    components={{
+                      p: ({ children }) => <p className="mb-4">{children}</p>
+                    }}
+                  >
+                    {draft}
+                  </ReactMarkdown>
                 </div>
               )}
               {!draft && data && data.result_text && (
                 <div className="bg-gray-100 p-4 rounded-md">
-                  <ReactMarkdown>{data.result_text}</ReactMarkdown>
+                  <ReactMarkdown
+                    components={{
+                      p: ({ children }) => <p className="mb-4">{children}</p>
+                    }}
+                  >
+                    {data.result_text}
+                  </ReactMarkdown>
                 </div>
               )}
               {console.log('Draft:', draft)}
